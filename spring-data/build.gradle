@@ -62,8 +62,10 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'javax.servlet:javax.servlet-api:4.0.1'
-    implementation "io.springfox:springfox-swagger2:${springfoxSwaggerVersion}"
-    implementation "io.springfox:springfox-swagger-ui:${springfoxSwaggerVersion}"
+
+    // === Swagger 시작 ===
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+    // === Swagger 끝 ===
 
     // forTest
     testImplementation "org.springframework.boot:spring-boot-starter-test"
