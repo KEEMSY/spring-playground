@@ -6,5 +6,5 @@ import java.util.List;
 
 
 public interface ProductQuerydslRepository {
-    List<ProductEntity> findProductsByNameAndPrice(String name, Integer price);
+    List<ProductEntity> findProductsByStockStatusAndPrice(String stockStatus, Integer minPrice, Integer madPrice);
 }
