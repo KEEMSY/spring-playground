@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import spring.playground.springdata.service.ProductService;
 import spring.playground.springdata.service.dto.ChangeProductNameDto;
+import spring.playground.springdata.service.dto.ListProductResponseDto;
 import spring.playground.springdata.service.dto.ProductDto;
 import spring.playground.springdata.service.dto.ProductResponseDto;
 
@@ -25,6 +26,13 @@ public class ProductController {
         ProductResponseDto productResponseDto = productService.getProduct(number);
 
         return ResponseEntity.status(HttpStatus.OK).body(productResponseDto);
+    }
+
+    @GetMapping("/condition")
+    public ResponseEntity<ListProductResponseDto> getProductByConditions(String stockStatus, Integer minPrice, Integer maxPrice) throws Exception {
+        ListProductResponseDto listProductResponseDto = productService.getProductsByCondition(stockStatus, minPrice, maxPrice);
+
+        return ResponseEntity.status(HttpStatus.OK).body(listProductResponseDto);
     }
 
     @PostMapping()
