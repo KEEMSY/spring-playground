@@ -4,19 +4,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import spring.playground.springdata.persistence.entity.ProductEntity;
 import spring.playground.springdata.persistence.repository.ProductJpaRepository;
+import spring.playground.springdata.persistence.repository.ProductQuerydslRepository;
 import spring.playground.springdata.service.dao.ProductDAO;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Component
 public class ProductDAOImpl implements ProductDAO {
 
-    private ProductJpaRepository productJpaRepository;
+    private final ProductJpaRepository productJpaRepository;
+    private final ProductQuerydslRepository productQuerydslRepository;
 
     @Autowired
-    public ProductDAOImpl(ProductJpaRepository productJpaRepository) {
+    public ProductDAOImpl(ProductJpaRepository productJpaRepository,
+                          ProductQuerydslRepository productQuerydslRepository) {
         this.productJpaRepository = productJpaRepository;
+        this.productQuerydslRepository = productQuerydslRepository;
     }
 
     @Override
@@ -31,6 +36,14 @@ public class ProductDAOImpl implements ProductDAO {
         Optional<ProductEntity> selectedProduct = productJpaRepository.findById(number);
 
         return selectedProduct;
+    }
+
+    @Override
+    public List<ProductEntity> selectProducts(String stockStatus, Integer minPrice, Integer maxPrice) {
+        List<ProductEntity> productEntityList = productQuerydslRepository
+                .findProductsByStockStatusAndPrice(stockStatus, minPrice,maxPrice);
+
+        return productEntityList;
     }
 
     @Override
