@@ -5,11 +5,13 @@ import org.springframework.stereotype.Service;
 import spring.playground.springdata.persistence.entity.ProductEntity;
 import spring.playground.springdata.service.ProductService;
 import spring.playground.springdata.service.dao.ProductDAO;
+import spring.playground.springdata.service.dto.ListProductResponseDto;
 import spring.playground.springdata.service.dto.ProductDto;
 import spring.playground.springdata.service.dto.ProductResponseDto;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -32,6 +34,17 @@ public class ProductServiceImpl implements ProductService {
         productResponseDto.setStock(product.getStock());
 
         return productResponseDto;
+    }
+
+    @Override
+    public ListProductResponseDto getProductsByCondition(String stockStatus, Integer minPrice, Integer maxPrice) {
+        List<ProductEntity> productEntityList = productDAO.selectProducts(stockStatus, minPrice, maxPrice);
+
+        List<ProductResponseDto> productResponseDtoList = productEntityList.stream()
+                .map(entity -> new ProductResponseDto(entity.getNumber(), entity.getName(), entity.getPrice(), entity.getStock()))
+                .collect(Collectors.toList());
+
+        return new ListProductResponseDto(productResponseDtoList);
     }
 
     @Override
