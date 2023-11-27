@@ -33,11 +33,15 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
     jpa:
+      properties:
+        hibernate.format_sql: true
+      
+      hibernate:
+        ddl-auto: update # 데이터베이스 초기화 전략: none, create, create-drop, update, validate 가 존재
+      
+      show_sql: true        
       database-platform: org.hibernate.dialect.MySQL57Dialect
       open-in-view: false
-      show-sql: true
-      hibernate:
-        ddl-auto: update
 ```
 - url 설정
   
