@@ -97,3 +97,19 @@ clean.doLast {
 - 밸류 타입 매핑(한 개 이상 칼럼을 한 개 타입으로 매핑)
 - 클래스 간 연관 지원(1-1, 1-N, N-1, N-M)
 - 상속에 대한 매핑
+
+<br>
+
+> Pagination
+
+```java
+int page = 0;
+int size = 10;
+PageRequest page = PageRequest.of(page, size);
+
+// 정렬
+PageRequest page = PageRequest.of(page, size, Sort.by("SOME PROPERTY").descending());
+PageRequest page = PageRequest.of(page, size, Sort.by(Direction.DESC, "SOME PROPERTY"));
+PageRequest page = PageRequest.of(page, size, Sort.by(Order.desc("SOME PROPERTY")));
+PageRequest page = PageRequest.of(page, size, Direction.DESC, "SOME PROPERTY");
+```
