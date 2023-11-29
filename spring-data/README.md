@@ -113,3 +113,25 @@ PageRequest page = PageRequest.of(page, size, Sort.by(Direction.DESC, "SOME PROP
 PageRequest page = PageRequest.of(page, size, Sort.by(Order.desc("SOME PROPERTY")));
 PageRequest page = PageRequest.of(page, size, Direction.DESC, "SOME PROPERTY");
 ```
+
+
+<br>
+
+> Spring Data Redis
+
+**application.yml**
+```yaml
+spring:
+  data:
+    redis:
+      port: 6379
+      host: localhost
+```
+
+<br>
+
+**build.gradle**
+
+```
+implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+```
