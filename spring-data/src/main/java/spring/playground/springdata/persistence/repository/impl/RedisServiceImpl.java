@@ -2,6 +2,7 @@ package spring.playground.springdata.persistence.repository.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 import spring.playground.springdata.persistence.repository.RedisRepository;
 
 import java.util.List;
@@ -9,10 +10,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+@Service
 public class RedisServiceImpl implements RedisRepository {
 
+    private final RedisTemplate redisTemplate;
+
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    public RedisServiceImpl(RedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     @Override
     public void set(String key, Object value, long time) {
