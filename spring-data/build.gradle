@@ -74,6 +74,7 @@ dependencies {
     // forTest
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter"
+    testImplementation "org.testcontainers:junit-jupiter:1.19.0"
 }
 
 tasks.named('bootBuildImage') {
