@@ -3,7 +3,7 @@ package spring.playground.springdata.persistence.repository.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import spring.playground.springdata.persistence.repository.RedisRepository;
+import spring.playground.springdata.persistence.repository.RedisService;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class RedisServiceImpl implements RedisRepository {
+public class RedisServiceImpl implements RedisService {
 
     private final RedisTemplate redisTemplate;
 
