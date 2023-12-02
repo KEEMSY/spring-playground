@@ -1,6 +1,8 @@
 package spring.playground.springdata.persistence.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import spring.playground.springdata.persistence.entity.ProductEntity;
 import spring.playground.springdata.persistence.repository.ProductJpaRepository;
@@ -44,6 +46,11 @@ public class ProductDAOImpl implements ProductDAO {
                 .findProductsByStockStatusAndPrice(stockStatus, minPrice,maxPrice);
 
         return productEntityList;
+    }
+
+    @Override
+    public Page<ProductEntity> getAllProducts(Pageable pageable) {
+        return productJpaRepository.findAll(pageable);
     }
 
     @Override
