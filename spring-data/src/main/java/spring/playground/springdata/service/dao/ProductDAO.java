@@ -15,6 +15,8 @@ public interface ProductDAO {
 
     List<ProductEntity> selectProducts(String stockStatus, Integer minPrice, Integer maxPrice);
 
+    Page<ProductEntity> selectProductsPage(String stockStatus, Integer minPrice, Integer maxPrice);
+
     Page<ProductEntity> getAllProducts(Pageable pageable);
 
     ProductEntity updateProductName(Long number, String name) throws Exception;
