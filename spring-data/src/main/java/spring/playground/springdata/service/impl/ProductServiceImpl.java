@@ -1,6 +1,8 @@
 package spring.playground.springdata.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import spring.playground.springdata.persistence.entity.ProductEntity;
 import spring.playground.springdata.service.ProductService;
@@ -41,6 +43,17 @@ public class ProductServiceImpl implements ProductService {
         List<ProductEntity> productEntityList = productDAO.selectProducts(stockStatus, minPrice, maxPrice);
 
         List<ProductResponseDto> productResponseDtoList = productEntityList.stream()
+                .map(entity -> new ProductResponseDto(entity.getNumber(), entity.getName(), entity.getPrice(), entity.getStock()))
+                .collect(Collectors.toList());
+
+        return new ListProductResponseDto(productResponseDtoList);
+    }
+
+    @Override
+    public ListProductResponseDto getProductsByConditionPage(String stockStatus, Integer minPrice, Integer maxPrice, Pageable pageable) throws Exception {
+        Page<ProductEntity> productEntities = productDAO.selectProductsPage(stockStatus, minPrice, maxPrice, pageable);
+
+        List<ProductResponseDto> productResponseDtoList = productEntities.stream()
                 .map(entity -> new ProductResponseDto(entity.getNumber(), entity.getName(), entity.getPrice(), entity.getStock()))
                 .collect(Collectors.toList());
 
