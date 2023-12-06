@@ -15,7 +15,7 @@ public interface ProductDAO {
 
     List<ProductEntity> selectProducts(String stockStatus, Integer minPrice, Integer maxPrice);
 
-    Page<ProductEntity> selectProductsPage(String stockStatus, Integer minPrice, Integer maxPrice);
+    Page<ProductEntity> selectProductsPage(String stockStatus, Integer minPrice, Integer maxPrice, Pageable pageable);
 
     Page<ProductEntity> getAllProducts(Pageable pageable);
 

@@ -49,6 +49,15 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
+    public Page<ProductEntity> selectProductsPage(String stockStatus, Integer minPrice,
+                                                  Integer maxPrice, Pageable pageable) {
+        Page<ProductEntity> productEntityList = productQuerydslRepository
+                .findProductsByStockStatusAndPricePage(stockStatus, minPrice, maxPrice, pageable);
+
+        return productEntityList;
+    }
+
+    @Override
     public Page<ProductEntity> getAllProducts(Pageable pageable) {
         return productJpaRepository.findAll(pageable);
     }
