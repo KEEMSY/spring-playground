@@ -119,6 +119,43 @@ PageRequest page = PageRequest.of(page, size, Direction.DESC, "SOME PROPERTY");
 
 <br>
 
+```java
+// Slice
+
+@ToString
+@NoArgsConstructor
+@Getter
+@Entity
+public class Item {
+
+  @Id
+  @GeneratedValue
+  private Long id;
+
+  private String name;
+
+  private int price;
+
+  public Item(final String name, final int price) {
+    this.name = name;
+    this.price = price;
+  }
+}
+
+
+public interface ItemRepository extends JpaRepository<Item, Long> { 
+  // 메서드의 반환 타입을 Slice 로 지정하고, 파라미터로 Pageable 을 받는다.
+  Slice<Item> findSliceByPrice(int price, Pageable pageable);
+}
+```
+
+- Spring Data JPA 레포지토리에 Pageable 을 전달하면, 반환 타입으로 Slice 혹은 Page 를 받을 수 있다. 두 인터페이스 모두 페이지네이션을 통한 조회 결과를 저장하는 역할을 한다. 또한 Page 는 Slice 를 상속받는다.
+- 전체 페이지 개수를 알아내기 위해서는 전체 데이터 개수 / 단일 페이지의 크기 로 계산해야한다.
+- 전체 데이터 개수를 알아내기 위해서는 count 쿼리를 실행해야한다.
+- Slice 는 별도로 count 쿼리를 실행하지 않는다. 따라서 전체 페이지의 개수와 전체 엔티티의 개수를 알 수 없지만, 불필요한 count 쿼리로 인한 성능 낭비는 발생하지 않는다.
+
+<br>
+
 > Spring Data Redis
 
 **application.yml**
