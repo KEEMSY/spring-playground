@@ -105,7 +105,7 @@ clean.doLast {
 ```java
 int page = 0;
 int size = 10;
-PageRequest page = PageRequest.of(page, size);
+PageRequest page = PageRequest.of(pageNumber, offset);
 
 // 정렬
 PageRequest page = PageRequest.of(page, size, Sort.by("SOME PROPERTY").descending());
@@ -114,6 +114,8 @@ PageRequest page = PageRequest.of(page, size, Sort.by(Order.desc("SOME PROPERTY"
 PageRequest page = PageRequest.of(page, size, Direction.DESC, "SOME PROPERTY");
 ```
 
+- `Pageable`, `PageRequest` 는 Spring Data 에서 제공하는 페이지네이션 정보를 담기위한 인터페이스 및 구현체이며, 페이지 번호와 단일 페이지의 개수를 담을 수 있다.
+- 정렬은 `PageRequest.of()` 의 세번째 인자로 `Sort` 혹은 `Direction` 를 추가하면 된다.
 
 <br>
 
