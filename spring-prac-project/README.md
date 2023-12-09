@@ -30,6 +30,7 @@
 - API Design
 - Documentation
   - Change Log
+  - Swagger
 
 > Database and Data Management
 
