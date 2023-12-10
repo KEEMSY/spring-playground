@@ -17,6 +17,7 @@
   - 어노테이션  
   - Paging, Iterating Large Results, Sorting & Limiting
 
+- 영속성 계층에 대한 유연성을 위한 설계 방법
 
 <br>
 
@@ -120,8 +121,7 @@ PageRequest page = PageRequest.of(page, size, Direction.DESC, "SOME PROPERTY");
 <br>
 
 ```java
-// Slice
-
+// 공통 부분
 @ToString
 @NoArgsConstructor
 @Getter
@@ -141,8 +141,9 @@ public class Item {
     this.price = price;
   }
 }
-
-
+```
+```java
+// Slice
 public interface ItemRepository extends JpaRepository<Item, Long> { 
   // 메서드의 반환 타입을 Slice 로 지정하고, 파라미터로 Pageable 을 받는다.
   Slice<Item> findSliceByPrice(int price, Pageable pageable);
@@ -153,6 +154,18 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 - 전체 페이지 개수를 알아내기 위해서는 전체 데이터 개수 / 단일 페이지의 크기 로 계산해야한다.
 - 전체 데이터 개수를 알아내기 위해서는 count 쿼리를 실행해야한다.
 - Slice 는 별도로 count 쿼리를 실행하지 않는다. 따라서 전체 페이지의 개수와 전체 엔티티의 개수를 알 수 없지만, 불필요한 count 쿼리로 인한 성능 낭비는 발생하지 않는다.
+
+<br>
+
+```java
+// Page
+public interface ItemRepository extends JpaRepository<Item, Long> {
+  Page<Item> findPageByPrice(int price, Pageable pageable);
+}
+```
+
+- Page 는 Slice 와 다르게 count 쿼리를 실행하여, 전체 데이터 개수와 전체 페이지 개수를 계산할 수 있다.
+- 게시판의 페이지네이션 UI 등을 구현할 때 적합하다.
 
 <br>
 
