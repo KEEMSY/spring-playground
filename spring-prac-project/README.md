@@ -9,7 +9,7 @@
 > **Architecture Level**
 
 - Concurrency and Parallelism
-- Scalability & Maintainablity
+- Scalability & Maintainability
 - Backup & Recovery
 - Monitoring & Logging
 - Error Handling

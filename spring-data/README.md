@@ -160,6 +160,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 ```java
 // Page
 public interface ItemRepository extends JpaRepository<Item, Long> {
+  // 메서드의 반환 타입을 Page 로 지정하고, 파라미터로 Pageable 을 받는다.
   Page<Item> findPageByPrice(int price, Pageable pageable);
 }
 ```
