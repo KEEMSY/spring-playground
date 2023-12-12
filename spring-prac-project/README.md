@@ -50,3 +50,31 @@
 - OAuth
 - User Authentication and Authorization
 - Data Encryption
+
+<br><hr>
+
+## Container 관리
+
+### Ubuntu(Linux)
+
+```shell
+docker build -t ubuntu-container .
+docker run -d -p LOCAL_PORT:CONTAINER_PORT --privileged=true --name ubuntu-container ubuntu-container /usr/sbin/init
+
+# root 로 접근
+docker exec -it -u 0 CONTAINER_NAME bash
+```
+
+- 이미지를 통한 ubuntu(Linux) 컨테이너 설정을 진행
+
+> 패키지 관련
+
+```shell
+apt-get update && apt-get -y upgrade && apt-get install -y build-essential locales tzdata vim wget git curl cron rsync net-tools openssh-server sudo
+```
+
+- 패키지를 설치하기전, update, upgrade 를 진행한다.
+- 필수요소 및 필요한 패키지를 설치한다.
+
+*필요할 경우 계속하여 업데이트*
+
