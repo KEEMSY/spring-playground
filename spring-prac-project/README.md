@@ -81,3 +81,24 @@ apt-get update && apt-get -y upgrade && apt-get install -y build-essential local
 <br>
 
 ### Jenkins
+
+```shell
+# jenkins
+# 강의 참조: https://github.com/wardviaene/jenkins-docker
+# 인스턴스 내  docker 및 jenkins 설치 + 인스턴스 내에서 컨테이너 내에서 인스턴스(부모)에 설치된 도커에 접근을 가능하게 함
+docker build -t jenkins-docker .
+docker run -p 8080:8080 -p 50000:50000 -v /var/jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -d --name jenkins jenkins-docker
+```
+
+- 젠킨스는 따로 인스턴스를 띄워야한다.
+- 젠킨스 인스턴스 내, 도커 컨테이너를 띄워 젠킨스 컨테이너에서 젠킨스 인스턴스(부모)의 docker 와 소켓 통신을 가능하게 한다.
+
+> 에러 해결
+
+```shell
+jenkins@71b25fd71fca:/$ docker ps
+Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.37/containers/json: dial unix /var/run/docker.sock: connect: permission denied
+
+// 그룹이 추가되어있는지 확인. 안되있을 경우 그룹 추가
+sudo chgrp docker /var/run/docker.sock // 그룹 추가
+```
