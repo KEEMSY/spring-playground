@@ -99,6 +99,6 @@ docker run -p INSTANCE_PORT:CONTAINER_PORT -p INSTANCE_PORT:CONTAINER_PORT -v /v
 jenkins@71b25fd71fca:/$ docker ps
 Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.37/containers/json: dial unix /var/run/docker.sock: connect: permission denied
 
-// 그룹이 추가되어있는지 확인. 안되있을 경우 그룹 추가
-sudo chgrp docker /var/run/docker.sock // 그룹 추가
+# 그룹이 추가되어있는지 확인. 안되있을 경우 그룹 추가
+sudo chgrp docker /var/run/docker.sock # 그룹 추가
 ```
