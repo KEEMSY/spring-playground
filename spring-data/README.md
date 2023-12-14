@@ -170,6 +170,32 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
 <br>
 
+> Spring Data MongoDB
+
+**application.yml**
+```yaml
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      authentication-database: admin
+      database: MY-DATABASES
+      username: sykeem
+      password: 1234
+```
+
+<br>
+
+**build.gradle**
+
+```
+implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+implementation 'org.springframework.boot:spring-boot-starter-web'
+```
+
+<br>
+
 > Spring Data Redis
 
 **application.yml**
