@@ -74,8 +74,8 @@ class ProductJpaRepositoryTest {
         List<ProductEntity> productList = new ArrayList<>();
         for (int i = 0; i <= 10; i++) {
             ProductEntity productEntity = ProductEntity.builder()
-                    .name("testName0")
-                    .price(10)
+                    .name("testName: " + i)
+                    .price(10 + i)
                     .stock(i)
                     .build();
 
@@ -92,8 +92,11 @@ class ProductJpaRepositoryTest {
         Page<ProductEntity> productEntities = productJpaRepository.findAll(pageable);
 
         // then
+        List<ProductEntity> expectedProductEntities = productEntities.getContent();
+
         assertThat(productEntities).isNotNull();
-        assertThat(productEntities.getContent()).hasSize(3);
+        assertThat(expectedProductEntities).hasSize(3);
+        assertThat(expectedProductEntities.get(0).getName()).isEqualTo("testName: 10");
     }
 
 
