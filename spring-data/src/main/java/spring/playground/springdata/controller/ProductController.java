@@ -1,6 +1,7 @@
 package spring.playground.springdata.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,13 @@ public class ProductController {
     @GetMapping("/condition")
     public ResponseEntity<ListProductResponseDto> getProductByConditions(String stockStatus, Integer minPrice, Integer maxPrice) throws Exception {
         ListProductResponseDto listProductResponseDto = productService.getProductsByCondition(stockStatus, minPrice, maxPrice);
+
+        return ResponseEntity.status(HttpStatus.OK).body(listProductResponseDto);
+    }
+
+    @GetMapping("/condition/pagination")
+    public ResponseEntity<ListProductResponseDto> getProductByConditionsWithPage(String stockStatus, Integer minPrice, Integer maxPrice, Pageable pageable) throws Exception {
+        ListProductResponseDto listProductResponseDto = productService.getProductsByConditionPage(stockStatus, minPrice, maxPrice, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(listProductResponseDto);
     }
