@@ -27,10 +27,7 @@ body:
     attributes:
       label: 세부 작업
       description: 작업에 대한 상세한 설명을 작성해주세요.
-      value: "|
-              - [ ] 세부 작업 1: <!-- 작업에 대한 상세한 설명 --> | 
-              - [ ] 세부 작업 2: <!-- 작업에 대한 상세한 설명 -->
-              "
+      value: ""
             
     validations:
       required: true
