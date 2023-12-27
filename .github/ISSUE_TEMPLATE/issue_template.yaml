@@ -15,7 +15,7 @@ body:
       multiple: true
 
   - type: textarea
-    id: 작업 목표
+    id: goal
     attributes:
       label: Description
       description: 새로운 작업에 대한 명확하고 간결할 설명을 작성해주세요. 이 작업을 통해 해결하고자 하는 동기나 문제를 설명하면 좋아요.
@@ -27,7 +27,6 @@ body:
     attributes:
       label: 세부 작업
       description: 작업에 대한 상세한 설명을 작성해주세요.
-      value: ""
             
     validations:
       required: true
