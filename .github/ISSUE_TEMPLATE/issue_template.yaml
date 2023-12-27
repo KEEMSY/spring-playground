@@ -15,10 +15,10 @@ body:
       multiple: true
 
   - type: textarea
-    id: description
+    id: 작업 목표
     attributes:
       label: Description
-      description: 새로운 작업에 대한 명확하고 간결할 설명을 작성해주세요. 이 기능을 통해 해결하고자 하는 동기나 문제를 설명하면 좋아요.
+      description: 새로운 작업에 대한 명확하고 간결할 설명을 작성해주세요. 이 작업을 통해 해결하고자 하는 동기나 문제를 설명하면 좋아요.
     validations:
       required: true
 
@@ -27,9 +27,10 @@ body:
     attributes:
       label: 세부 작업
       description: 작업에 대한 상세한 설명을 작성해주세요.
-      value: "- [ ] 세부 작업 1: <!-- 작업에 대한 상세한 설명 -->
+      value: |
+              - [ ] 세부 작업 1: <!-- 작업에 대한 상세한 설명 --> | 
               - [ ] 세부 작업 2: <!-- 작업에 대한 상세한 설명 -->
-              "
+            
     validations:
       required: true
 
