@@ -1,64 +1,42 @@
-name: Bug Report
-description: File a bug report
-title: "[Bug]: "
-labels: ["bug", "triage"]
-projects: ["octo-org/1", "octo-org/44"]
-assignees:
-  - octocat
+name: 'Issue Request'
+description: Suggest an idea for dev
+
 body:
-  - type: markdown
-    attributes:
-      value: |
-        Thanks for taking the time to fill out this bug report!
-  - type: input
-    id: contact
-    attributes:
-      label: Contact Details
-      description: How can we get in touch with you if we need more info?
-      placeholder: ex. email@example.com
-    validations:
-      required: false
-  - type: textarea
-    id: what-happened
-    attributes:
-      label: What happened?
-      description: Also tell us, what did you expect to happen?
-      placeholder: Tell us what you see!
-      value: "A bug happened!"
-    validations:
-      required: true
   - type: dropdown
-    id: version
+    id: type
     attributes:
-      label: Version
-      description: What version of our software are you running?
+      label: 작업 종류
       options:
-        - 1.0.2 (Default)
-        - 1.0.3 (Edge)
-      default: 0
-    validations:
-      required: true
-  - type: dropdown
-    id: browsers
-    attributes:
-      label: What browsers are you seeing the problem on?
+        - 기능 추가
+        - 리팩터링
+        - 버그 수정
+        - 컨벤션 수정
+        - 테스트
       multiple: true
-      options:
-        - Firefox
-        - Chrome
-        - Safari
-        - Microsoft Edge
+
   - type: textarea
-    id: logs
+    id: description
     attributes:
-      label: Relevant log output
-      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
-      render: shell
-  - type: checkboxes
-    id: terms
+      label: Description
+      description: 새로운 작업에 대한 명확하고 간결할 설명을 작성해주세요. 이 기능을 통해 해결하고자 하는 동기나 문제를 설명하면 좋아요.
+    validations:
+      required: true
+
+  - type: textarea
+    id: detail
     attributes:
-      label: Code of Conduct
-      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com)
-      options:
-        - label: I agree to follow this project's Code of Conduct
-          required: true
+      label: 세부 작업
+      description: 작업에 대한 상세한 설명을 작성해주세요.
+      value: "- [ ] 세부 작업 1: <!-- 작업에 대한 상세한 설명 -->
+              - [ ] 세부 작업 2: <!-- 작업에 대한 상세한 설명 -->
+              "
+    validations:
+      required: true
+
+  - type: textarea
+    id: remark
+    attributes:
+      label: 특이사항
+      description: 작업 계획 및 특이사항을 작성해주세요. 참고하면 좋을 내용을 추가해도 좋아요.
+    validations:
+      required: true
