@@ -1,5 +1,4 @@
 name: 'Issue Request'
-description: Suggest an idea for dev
 
 body:
   - type: dropdown
