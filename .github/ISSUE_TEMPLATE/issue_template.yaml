@@ -1,5 +1,5 @@
 name: 'Issue Request'
-description: 
+description: Issue Request
 
 body:
   - type: dropdown
