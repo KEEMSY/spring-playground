@@ -20,8 +20,16 @@ spring:
       matching-strategy: ant_path_matcher
   data:
     redis:
-      port: 6379
       host: localhost
+      port: 6379
+
+    mongodb:
+      host: localhost
+      port: 27017
+      authentication-database: admin
+      database: MY-DATABASES
+      username: sykeem
+      password: 1234
 
 springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
