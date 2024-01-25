@@ -8,6 +8,6 @@ public interface MemberPort {
     Long join(Member member);
     List<Member> findMembers();
     Member findOne(Long memberId);
-    void Update(Long id, String name);
+    void update(Long id, String name);
 
 }
