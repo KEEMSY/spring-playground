@@ -172,17 +172,95 @@ class OrderAdapterTest {
                 .isInstanceOf(IllegalStateException.class).hasMessage("존재하지 않는 상품입니다.");
     }
 
-    @NotNull
-    private static Category addCategory(Item album) {
-        Category category = new Category();
-        category.setName("Category Name");
-        category.setItems(new ArrayList<>());
-        category.getItems().add(album);
-        return category;
+    @Test
+    @Transactional
+    @DisplayName("주문 취소 테스트")
+    void cancelOrder() {
+        // given
+        Member member = saveMember("test");
+        Album album = new Album();
+        album.setName("Album Title");
+        album.setPrice(20);
+        album.setStockQuantity(50);
+        album.setArtist("Artist Name");
+        album.setEtc("Other Album Details");
+
+        Category category = addCategory(album);
+
+        album.setCategories(new ArrayList<>());
+        album.getCategories().add(category);
+
+        itemJpaRepository.save(album);
+
+        Long orderId = orderAdapter.order(member.getId(), album.getId(), 1);
+
+        // when
+        orderAdapter.cancelOrder(orderId);
+
+        // then
+        Order expected_order = orderJpaRepository.findById(orderId).orElseThrow(() -> new IllegalStateException("주문이 존재하지 않습니다."));
+        assertThat(expected_order.getStatus()).isEqualTo(OrderStatus.CANCEL);
+        assertThat(expected_order.getOrderItems().get(0).getItem().getStockQuantity()).isEqualTo(50);
     }
 
     @Test
-    void cancelOrder() {
+    @DisplayName("주문 취소 실패 테스트: 존재하지 않는 주문")
+    void orderCancelFail() {
+        // given
+        Member member = saveMember("test");
+        Album album = new Album();
+        album.setName("Album Title");
+        album.setPrice(20);
+        album.setStockQuantity(50);
+        album.setArtist("Artist Name");
+        album.setEtc("Other Album Details");
+
+        Category category = addCategory(album);
+
+        album.setCategories(new ArrayList<>());
+        album.getCategories().add(category);
+
+        itemJpaRepository.save(album);
+
+        Long orderId = orderAdapter.order(member.getId(), album.getId(), 1);
+
+        // when, then
+        Long unknownOrder = orderId + 1;
+        assertThatThrownBy(() ->
+                orderAdapter.cancelOrder(unknownOrder))
+                .isInstanceOf(IllegalStateException.class).hasMessage("존재하지 않는 주문입니다.");
+    }
+
+    @Test
+//    @Transactional
+    @DisplayName("주문 취소 실패 테스트: 이미 배송 완료된 상품")
+    void orderCancelFailTest2() {
+        // given
+        Member member = saveMember("test");
+        Album album = new Album();
+        album.setName("Album Title");
+        album.setPrice(20);
+        album.setStockQuantity(50);
+        album.setArtist("Artist Name");
+        album.setEtc("Other Album Details");
+
+        Category category = addCategory(album);
+
+        album.setCategories(new ArrayList<>());
+        album.getCategories().add(category);
+
+        itemJpaRepository.save(album);
+
+        Long orderId = orderAdapter.order(member.getId(), album.getId(), 1);
+
+        // when
+        Order order = orderJpaRepository.findById(orderId).orElseThrow(() -> new IllegalStateException("주문이 존재하지 않습니다."));
+        order.getDelivery().setStatus(DeliveryStatus.COMP);
+
+        // then
+        assertThatThrownBy(() ->
+                orderAdapter.cancelOrder(orderId))
+                .isInstanceOf(IllegalStateException.class).hasMessage("이미 배송완료된 상품은 취소가 불가능합니다.");
     }
 
     @Test
@@ -198,5 +276,14 @@ class OrderAdapterTest {
 
         memberJpaRepository.save(member);
         return member;
+    }
+
+    @NotNull
+    private static Category addCategory(Item album) {
+        Category category = new Category();
+        category.setName("Category Name");
+        category.setItems(new ArrayList<>());
+        category.getItems().add(album);
+        return category;
     }
 }
