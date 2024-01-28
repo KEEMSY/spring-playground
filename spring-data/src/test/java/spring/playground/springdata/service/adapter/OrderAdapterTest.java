@@ -120,6 +120,58 @@ class OrderAdapterTest {
                 .isInstanceOf(NotEnoughStockException.class).hasMessage("상품의 재고가 부족합니다.");
     }
 
+    @Test
+    @DisplayName("주문 실패 테스트: 존재하지 않는 회원")
+    void orderFailTest2() {
+        // given
+        Member member = saveMember("test");
+        Album album = new Album();
+        album.setName("Album Title");
+        album.setPrice(20);
+        album.setStockQuantity(50);
+        album.setArtist("Artist Name");
+        album.setEtc("Other Album Details");
+
+        Category category = addCategory(album);
+
+        album.setCategories(new ArrayList<>());
+        album.getCategories().add(category);
+
+        itemJpaRepository.save(album);
+
+        // when, then
+        Long unknownMember = member.getId() + 1;
+        assertThatThrownBy(() ->
+                orderAdapter.order(unknownMember, album.getId(), 1))
+                .isInstanceOf(IllegalStateException.class).hasMessage("존재하지 않는 회원입니다.");
+    }
+
+    @Test
+    @DisplayName("주문 실패 테스트: 존재하지 않는 상품")
+    void orderFailTest3() {
+        // given
+        Member member = saveMember("test");
+        Album album = new Album();
+        album.setName("Album Title");
+        album.setPrice(20);
+        album.setStockQuantity(50);
+        album.setArtist("Artist Name");
+        album.setEtc("Other Album Details");
+
+        Category category = addCategory(album);
+
+        album.setCategories(new ArrayList<>());
+        album.getCategories().add(category);
+
+        itemJpaRepository.save(album);
+
+        // when, then
+        Long unknownItem = album.getId() + 1;
+        assertThatThrownBy(() ->
+                orderAdapter.order(member.getId(), unknownItem, 1))
+                .isInstanceOf(IllegalStateException.class).hasMessage("존재하지 않는 상품입니다.");
+    }
+
     @NotNull
     private static Category addCategory(Item album) {
         Category category = new Category();
