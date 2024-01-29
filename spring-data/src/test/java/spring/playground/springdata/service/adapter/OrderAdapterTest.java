@@ -15,6 +15,7 @@ import spring.playground.springdata.persistence.entity.item.Item;
 import spring.playground.springdata.persistence.entity.member.Member;
 import spring.playground.springdata.persistence.entity.order.DeliveryStatus;
 import spring.playground.springdata.persistence.entity.order.Order;
+import spring.playground.springdata.persistence.entity.order.OrderSearch;
 import spring.playground.springdata.persistence.entity.order.OrderStatus;
 import spring.playground.springdata.persistence.repository.ItemJpaRepository;
 import spring.playground.springdata.persistence.repository.MemberJpaRepository;
@@ -24,6 +25,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootTest
 class OrderAdapterTest {
@@ -45,9 +47,9 @@ class OrderAdapterTest {
 
     @BeforeEach
     void setUp() {
-        memberJpaRepository.deleteAll();
-        itemJpaRepository.deleteAll();
         orderJpaRepository.deleteAll();
+        itemJpaRepository.deleteAll();
+        memberJpaRepository.deleteAll();
     }
 
     @Test
@@ -232,7 +234,7 @@ class OrderAdapterTest {
     }
 
     @Test
-//    @Transactional
+    @Transactional
     @DisplayName("주문 취소 실패 테스트: 이미 배송 완료된 상품")
     void orderCancelFailTest2() {
         // given
@@ -264,7 +266,50 @@ class OrderAdapterTest {
     }
 
     @Test
+    @DisplayName("주문 조회 테스트")
+    @Transactional
     void findOrders() {
+        // given
+        Member member = saveMember("test");
+
+        Album album = new Album();
+        album.setName("Album Title");
+        album.setPrice(20);
+        album.setStockQuantity(50);
+        album.setArtist("Artist Name");
+        album.setEtc("Other Album Details");
+
+        Album album2 = new Album();
+        album2.setName("Album Title2");
+        album2.setPrice(20);
+        album2.setStockQuantity(50);
+        album2.setArtist("Artist Name2");
+        album2.setEtc("Other Album Details2");
+
+
+        Category category = addCategory(album);
+
+        album.setCategories(new ArrayList<>());
+        album2.setCategories(new ArrayList<>());
+
+        album.getCategories().add(category);
+        album2.getCategories().add(category);
+
+        itemJpaRepository.save(album);
+
+        Long orderId = orderAdapter.order(member.getId(), album.getId(), 1);
+        Long orderId2 = orderAdapter.order(member.getId(), album.getId(), 1);
+
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+        orderSearch.setMemberName("test");
+
+        // when
+        List<Order> orders = orderAdapter.findOrders(orderSearch);
+
+        // then
+        assertThat(orders.size()).isEqualTo(2);
+        assertThat(orders.get(0).getOrderItems().size()).isEqualTo(1);
     }
 
     @NotNull
