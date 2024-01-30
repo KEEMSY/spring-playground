@@ -4,13 +4,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import spring.playground.springdata.persistence.entity.item.Item;
 import spring.playground.springdata.persistence.entity.member.Member;
-import spring.playground.springdata.persistence.entity.order.Delivery;
-import spring.playground.springdata.persistence.entity.order.DeliveryStatus;
-import spring.playground.springdata.persistence.entity.order.Order;
-import spring.playground.springdata.persistence.entity.order.OrderItem;
+import spring.playground.springdata.persistence.entity.order.*;
 import spring.playground.springdata.persistence.repository.ItemJpaRepository;
 import spring.playground.springdata.persistence.repository.MemberJpaRepository;
 import spring.playground.springdata.persistence.repository.OrderJpaRepository;
+import spring.playground.springdata.persistence.repository.OrderQueryDslRepository;
 import spring.playground.springdata.service.OrderPort;
 
 import java.util.List;
@@ -19,13 +17,16 @@ import java.util.List;
 public class OrderAdapter implements OrderPort {
     private final MemberJpaRepository memberJpaRepository;
     private final OrderJpaRepository orderJpaRepository;
+    private final OrderQueryDslRepository orderQueryDslRepository;
     private final ItemJpaRepository itemJpaRepository;
 
     public OrderAdapter(MemberJpaRepository memberJpaRepository,
                         OrderJpaRepository orderJpaRepository,
+                        OrderQueryDslRepository orderQueryDslRepository,
                         ItemJpaRepository itemJpaRepository) {
         this.memberJpaRepository = memberJpaRepository;
         this.orderJpaRepository = orderJpaRepository;
+        this.orderQueryDslRepository = orderQueryDslRepository;
         this.itemJpaRepository = itemJpaRepository;
     }
 
@@ -62,7 +63,7 @@ public class OrderAdapter implements OrderPort {
     }
 
     @Override
-    public List<Order> findOrders() {
-        return null;
+    public List<Order> findOrders(OrderSearch orderSearch) {
+        return orderQueryDslRepository.findOrdersWith(orderSearch);
     }
 }
