@@ -1,12 +1,13 @@
 package spring.playground.springdata.service.adapter;
 
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import spring.playground.springdata.DatabaseCleanup;
 import spring.playground.springdata.exception.NotEnoughStockException;
 import spring.playground.springdata.persistence.entity.common.Address;
 import spring.playground.springdata.persistence.entity.common.Category;
@@ -21,11 +22,11 @@ import spring.playground.springdata.persistence.repository.ItemJpaRepository;
 import spring.playground.springdata.persistence.repository.MemberJpaRepository;
 import spring.playground.springdata.persistence.repository.OrderJpaRepository;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
 class OrderAdapterTest {
@@ -33,23 +34,24 @@ class OrderAdapterTest {
     private final MemberJpaRepository memberJpaRepository;
     private final ItemJpaRepository itemJpaRepository;
     private final OrderJpaRepository orderJpaRepository;
+    private final DatabaseCleanup databaseCleanup;
 
     @Autowired
     OrderAdapterTest(OrderAdapter orderAdapter,
                      MemberJpaRepository memberJpaRepository,
                      ItemJpaRepository itemJpaRepository,
-                     OrderJpaRepository orderJpaRepository) {
+                     OrderJpaRepository orderJpaRepository,
+                     DatabaseCleanup databaseCleanup) {
         this.orderAdapter = orderAdapter;
         this.memberJpaRepository = memberJpaRepository;
         this.itemJpaRepository = itemJpaRepository;
         this.orderJpaRepository = orderJpaRepository;
+        this.databaseCleanup = databaseCleanup;
     }
 
-    @BeforeEach
+    @AfterEach
     void setUp() {
-        orderJpaRepository.deleteAll();
-        itemJpaRepository.deleteAll();
-        memberJpaRepository.deleteAll();
+        databaseCleanup.execute();
     }
 
     @Test
