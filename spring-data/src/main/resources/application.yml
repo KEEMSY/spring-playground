@@ -11,11 +11,14 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQL57Dialect
     open-in-view: false
-    show-sql: true
-    hibernate:
-      ddl-auto: create
-      format_sql: true
-      default_batch_fetch_size: 1000 #최적화 옵션, 이 옵션은 왠만해서는 켜두는 것이 좋다. | In query 의 개수를 지정하는 옵션
+    #    show-sql: true # 로그성임으로 false로 두고 logging 설정에서 따로 설정하는 것이 좋다.
+
+    properties:
+      hibernate:
+        format_sql: true
+        ddl-auto: create
+        default_batch_fetch_size: 1000 #최적화 옵션, 이 옵션은 왠만해서는 켜두는 것이 좋다. | In query 의 개수를 지정하는 옵션
+
 
   mvc:
     pathmatch:
@@ -55,3 +58,9 @@ springdoc:
     query-config-enabled: true # 현재 설정되어있는 config 들을 적용시키고, 초기 접근 시 셋팅 및 재정의 가능.
 
   pre-loading-enabled: true # 프로그램 시작 시 Open API 을 불러오기 위한 사전 셋팅
+
+
+logging.level:
+  org:
+    hibernate:
+      SQL: debug

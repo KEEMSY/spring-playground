@@ -8,15 +8,19 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQL57Dialect
     open-in-view: false
-    show-sql: true
-    hibernate:
-      ddl-auto: create
-      format_sql: true
-      default_batch_fetch_size: 1000 #최적화 옵션, 이 옵션은 왠만해서는 켜두는 것이 좋다. | In query 의 개수를 지정하는 옵션
+#    show-sql: true # 로그성임으로 false로 두고 logging 설정에서 따로 설정하는 것이 좋다.
 
     properties:
-      hibernate.format_sql: true
+      hibernate:
+        format_sql: true
+        ddl-auto: create
+        default_batch_fetch_size: 1000 #최적화 옵션, 이 옵션은 왠만해서는 켜두는 것이 좋다. | In query 의 개수를 지정하는 옵션
 
   mvc:
     path match:
       matching-strategy: ant_path_matcher
+
+logging.level:
+    org:
+      hibernate:
+        SQL: debug
