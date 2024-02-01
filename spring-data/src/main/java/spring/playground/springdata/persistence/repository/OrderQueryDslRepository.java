@@ -29,11 +29,28 @@ public class OrderQueryDslRepository {
                 .fetch();
     }
 
+
+    public List<Order> fetchOrders() {
+        return jpaQueryFactory
+                .selectFrom(order)
+                .fetch();
+    }
+
+    public Order fetchOneOrder(OrderSearch orderSearch) {
+        return jpaQueryFactory
+                .selectFrom(order)
+                .where(
+                        orderStatus(orderSearch.getOrderStatus()),
+                        nameContains(orderSearch.getMemberName())
+                )
+                .fetchOne();
+    }
+
     private static BooleanExpression orderStatus(OrderStatus orderStatus) {
         return order.status.eq(orderStatus);
     }
 
     private static BooleanExpression nameContains(String memberName) {
-        return memberName != null ? order.member.name.eq(memberName): null;
+        return memberName != null ? order.member.name.eq(memberName) : null;
     }
 }
