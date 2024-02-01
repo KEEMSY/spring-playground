@@ -1,6 +1,5 @@
 package spring.playground.springdata.persistence;
 
-import io.lettuce.core.AbstractRedisAsyncCommands;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import spring.playground.springdata.persistence.entity.common.Address;
@@ -8,8 +7,6 @@ import spring.playground.springdata.persistence.entity.common.Category;
 import spring.playground.springdata.persistence.entity.item.Album;
 import spring.playground.springdata.persistence.entity.item.Item;
 import spring.playground.springdata.persistence.entity.member.Member;
-import spring.playground.springdata.persistence.entity.order.Order;
-import spring.playground.springdata.persistence.repository.ItemJpaRepository;
 import spring.playground.springdata.persistence.repository.MemberJpaRepository;
 import spring.playground.springdata.service.OrderPort;
 
@@ -19,8 +16,6 @@ import java.util.ArrayList;
 public class OrderStep {
     @Autowired
     private  MemberJpaRepository memberJpaRepository;
-    @Autowired
-    private  ItemJpaRepository itemJpaRepository;
     @Autowired
     private  OrderPort orderAdapter;
 
