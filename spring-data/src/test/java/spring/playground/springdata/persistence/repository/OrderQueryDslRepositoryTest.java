@@ -211,4 +211,83 @@ class OrderQueryDslRepositoryTest {
         // then
         assertEquals(0, count);
     }
+
+    /**
+     * 주문 정렬 순서
+     * 1. 주문 상태 내림차순(descending)
+     * 2. 회원 이름 오름차순(asceding)
+     * 단, 2에서 회원 이름이 없으면 마지막에 출력(nulls last)
+     */
+    @Test
+    @DisplayName("fetchOrdersWithSort() 는 주문 상태 내림차순, 회원 이름 오름차순으로 정렬된 결과를 반환한다.")
+    @Transactional
+    void fetchOrdersWithSort() {
+        // given
+        Member member = orderStep.saveMember(null);
+        Album album = orderStep.saveAlbum("album for null member" , 1000, 10);
+        Category category = orderStep.addCategory(album);
+        album.setCategories(new ArrayList<>());
+        album.getCategories().add(category);
+        itemJpaRepository.save(album);
+        orderStep.createOrder(member, album.getId());
+
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+
+        // when
+        List<Order> orders = orderQueryDslRepository.fetchOrdersWithSortWithNullLast(orderSearch);
+
+        // then
+        assertEquals(11, orders.size());
+        assertEquals("test0", orders.get(0).getMember().getName());
+    }
+
+    @Test
+    @DisplayName("fetchOrdersWithSort() 는 회원 이름이 없으면 마지막에 출력한다.")
+    @Transactional
+    void fetchOrdersWithSortWithNull() {
+        // given
+        Member member = orderStep.saveMember(null);
+        Album album = orderStep.saveAlbum("album for null member" , 1000, 10);
+        Category category = orderStep.addCategory(album);
+        album.setCategories(new ArrayList<>());
+        album.getCategories().add(category);
+        itemJpaRepository.save(album);
+        orderStep.createOrder(member, album.getId());
+
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+
+        // when
+        List<Order> orders = orderQueryDslRepository.fetchOrdersWithSortWithNullLast(orderSearch);
+        int count = orders.size();
+
+        // then
+        assertEquals(11, orders.size());
+        assertEquals(null, orders.get(count-1).getMember().getName());
+    }
+
+    @Test
+    @DisplayName("fetchOrdersWithSort() 는 회원 이름이 없으면 처음에 출력한다.")
+    @Transactional
+    void fetchOrdersWithSortWithNullFirst() {
+        // given
+        Member member = orderStep.saveMember(null);
+        Album album = orderStep.saveAlbum("album for null member" , 1000, 10);
+        Category category = orderStep.addCategory(album);
+        album.setCategories(new ArrayList<>());
+        album.getCategories().add(category);
+        itemJpaRepository.save(album);
+        orderStep.createOrder(member, album.getId());
+
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+
+        // when
+        List<Order> orders = orderQueryDslRepository.fetchOrdersWithSortWithNullFirst(orderSearch);
+
+        // then
+        assertEquals(11, orders.size());
+        assertEquals(null, orders.get(0).getMember().getName());
+    }
 }

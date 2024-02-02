@@ -78,6 +78,34 @@ public class OrderQueryDslRepository {
                 .fetchCount();
     }
 
+    /**
+     * 정렬 관련
+     * 내림차순, 오름차순
+     * null 여부에 따른 정렬
+     */
+    public List<Order> fetchOrdersWithSortWithNullLast(OrderSearch orderSearch) {
+        return jpaQueryFactory
+                .selectFrom(order)
+                .where(
+                        orderStatus(orderSearch.getOrderStatus()),
+                        nameContains(orderSearch.getMemberName())
+                )
+                .orderBy(order.status.desc(), order.member.name.asc().nullsLast())
+                .fetch();
+    }
+
+    public List<Order> fetchOrdersWithSortWithNullFirst(OrderSearch orderSearch) {
+        return jpaQueryFactory
+                .selectFrom(order)
+                .where(
+                        orderStatus(orderSearch.getOrderStatus()),
+                        nameContains(orderSearch.getMemberName())
+                )
+                .orderBy(order.status.desc(), order.member.name.asc().nullsFirst())
+                .fetch();
+    }
+
+
     private static BooleanExpression orderStatus(OrderStatus orderStatus) {
         return order.status.eq(orderStatus);
     }
