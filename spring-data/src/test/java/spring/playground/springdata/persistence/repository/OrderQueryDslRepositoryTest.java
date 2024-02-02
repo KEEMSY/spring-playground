@@ -18,6 +18,7 @@ import spring.playground.springdata.persistence.entity.order.OrderSearch;
 import spring.playground.springdata.persistence.entity.order.OrderStatus;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -144,4 +145,40 @@ class OrderQueryDslRepositoryTest {
         // then
         assertEquals(null, order);
     }
+
+    @Test
+    @DisplayName("fetchResults() 는 페이징 처리된 결과를 반환한다.")
+    void fetchResults() {
+        // given
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+        orderSearch.setMemberName("test0");
+
+        // when
+        var orders = orderQueryDslRepository.fetchResults(orderSearch);
+        List<Order> content = orders.getResults();
+
+        // then
+        assertEquals(1, orders.getTotal());
+        assertEquals(1, content.size());
+    }
+
+    @Test
+    @DisplayName("fetchResults() 는 데이터가 없으면 빈 결과를 반환한다.")
+    void fetchResultsWithError() {
+        // given
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+        String unknownMemberName = "unknownMemberName";
+        orderSearch.setMemberName(unknownMemberName);
+
+        // when
+        var orders = orderQueryDslRepository.fetchResults(orderSearch);
+        List<Order> content = orders.getResults();
+
+        // then
+        assertEquals(0, orders.getTotal());
+        assertEquals(0, content.size());
+    }
+
 }

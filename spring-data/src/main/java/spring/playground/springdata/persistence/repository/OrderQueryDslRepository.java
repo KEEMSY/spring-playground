@@ -1,5 +1,6 @@
 package spring.playground.springdata.persistence.repository;
 
+import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
@@ -54,6 +55,16 @@ public class OrderQueryDslRepository {
                         nameContains(orderSearch.getMemberName())
                 )
                 .fetchFirst();
+    }
+
+    public QueryResults<Order> fetchResults(OrderSearch orderSearch) {
+        return jpaQueryFactory
+                .selectFrom(order)
+                .where(
+                        orderStatus(orderSearch.getOrderStatus()),
+                        nameContains(orderSearch.getMemberName())
+                )
+                .fetchResults();
     }
 
     private static BooleanExpression orderStatus(OrderStatus orderStatus) {
