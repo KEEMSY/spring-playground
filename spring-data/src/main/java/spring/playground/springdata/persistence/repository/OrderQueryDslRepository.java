@@ -56,7 +56,8 @@ public class OrderQueryDslRepository {
                 )
                 .fetchFirst();
     }
-
+    // 만약 페이징 쿼리가 복잡해지는 경우, 실제 컨텐츠를 가져오는 쿼리와 Count 를 가져오는 쿼리가 다를 수 있음(성능 최적화)
+    // 따라서, 복잡하고 성능이 중요한 경우 fetchResults() 를 사용하지 않고 쿼리 두번을 사용하는 것이 좋음
     public QueryResults<Order> fetchResults(OrderSearch orderSearch) {
         return jpaQueryFactory
                 .selectFrom(order)
@@ -67,14 +68,6 @@ public class OrderQueryDslRepository {
                 .fetchResults();
     }
 
-    private static BooleanExpression orderStatus(OrderStatus orderStatus) {
-        return order.status.eq(orderStatus);
-    }
-
-    private static BooleanExpression nameContains(String memberName) {
-        return memberName != null ? order.member.name.eq(memberName) : null;
-    }
-
     public long fetchCount(OrderSearch orderSearch) {
         return jpaQueryFactory
                 .selectFrom(order)
@@ -83,5 +76,13 @@ public class OrderQueryDslRepository {
                         nameContains(orderSearch.getMemberName())
                 )
                 .fetchCount();
+    }
+
+    private static BooleanExpression orderStatus(OrderStatus orderStatus) {
+        return order.status.eq(orderStatus);
+    }
+
+    private static BooleanExpression nameContains(String memberName) {
+        return memberName != null ? order.member.name.eq(memberName) : null;
     }
 }
