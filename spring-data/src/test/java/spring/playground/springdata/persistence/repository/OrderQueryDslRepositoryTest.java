@@ -181,4 +181,34 @@ class OrderQueryDslRepositoryTest {
         assertEquals(0, content.size());
     }
 
+    @Test
+    @DisplayName("fetchCount() 는 데이터의 개수를 반환한다.")
+    void fetchCount() {
+        // given
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+        orderSearch.setMemberName("test0");
+
+        // when
+        long count = orderQueryDslRepository.fetchCount(orderSearch);
+
+        // then
+        assertEquals(1, count);
+    }
+
+    @Test
+    @DisplayName("fetchCount() 는 데이터가 없으면 0을 반환한다.")
+    void fetchCountWithError() {
+        // given
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+        String unknownMemberName = "unknownMemberName";
+        orderSearch.setMemberName(unknownMemberName);
+
+        // when
+        long count = orderQueryDslRepository.fetchCount(orderSearch);
+
+        // then
+        assertEquals(0, count);
+    }
 }
