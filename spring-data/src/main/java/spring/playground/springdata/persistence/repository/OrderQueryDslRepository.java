@@ -46,6 +46,16 @@ public class OrderQueryDslRepository {
                 .fetchOne();
     }
 
+    public Order fetchFirstOrder(OrderSearch orderSearch) {
+        return jpaQueryFactory
+                .selectFrom(order)
+                .where(
+                        orderStatus(orderSearch.getOrderStatus()),
+                        nameContains(orderSearch.getMemberName())
+                )
+                .fetchFirst();
+    }
+
     private static BooleanExpression orderStatus(OrderStatus orderStatus) {
         return order.status.eq(orderStatus);
     }

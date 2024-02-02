@@ -113,4 +113,35 @@ class OrderQueryDslRepositoryTest {
         // when, then
         assertThrows(NonUniqueResultException.class, () -> orderQueryDslRepository.fetchOneOrder(orderSearch));
     }
+
+    @Test
+    @DisplayName("fetchFirst() 는 데이터가 여러개일 경우 첫번째 데이터를 반환한다.")
+    @Transactional
+    void fetchFirstOrderWithMultipleData() {
+        // given
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+
+        // when
+        Order order = orderQueryDslRepository.fetchFirstOrder(orderSearch);
+
+        // then
+        assertEquals("test0", order.getMember().getName());
+    }
+
+    @Test
+    @DisplayName("fetchFirst() 는 데이터가 없으면 null 을 반환한다.")
+    void fetchFirstOrderWithError() {
+        // given
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+        String unknownMemberName = "unknownMemberName";
+        orderSearch.setMemberName(unknownMemberName);
+
+        // when
+        Order order = orderQueryDslRepository.fetchFirstOrder(orderSearch);
+
+        // then
+        assertEquals(null, order);
+    }
 }
