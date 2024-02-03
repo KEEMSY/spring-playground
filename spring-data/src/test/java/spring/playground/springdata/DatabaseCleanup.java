@@ -49,8 +49,6 @@ public class DatabaseCleanup implements InitializingBean {
 
     @Transactional
     public void execute() {
-        System.out.println("tableNames = " + tableNames);
-
         entityManager.flush();
 
         // Disable foreign key checks
@@ -67,5 +65,4 @@ public class DatabaseCleanup implements InitializingBean {
         // Enable foreign key checks
         entityManager.createNativeQuery("SET foreign_key_checks = 1").executeUpdate();
     }
-
 }

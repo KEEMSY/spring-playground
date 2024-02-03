@@ -1,6 +1,7 @@
 package spring.playground.springdata.persistence.repository;
 
 import com.querydsl.core.NonUniqueResultException;
+import com.querydsl.core.QueryResults;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -289,5 +290,26 @@ class OrderQueryDslRepositoryTest {
         // then
         assertEquals(11, orders.size());
         assertEquals(null, orders.get(0).getMember().getName());
+    }
+
+    @Test
+    @DisplayName("페이징 쿼리 테스트")
+    void fetchOrdersWithPaging() {
+        // given
+        int limit = 5;
+        int offset = 0;
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+        orderSearch.setLimit(limit);
+        orderSearch.setOffset(offset);
+
+        // when
+        QueryResults<Order> orders = orderQueryDslRepository.fetchResultsWithPaging(orderSearch);
+        List<Order> content = orders.getResults();
+
+        // then
+        assertEquals(10, orders.getTotal());
+        assertEquals(5, content.size());
+        assertEquals(content.size(), limit);
     }
 }

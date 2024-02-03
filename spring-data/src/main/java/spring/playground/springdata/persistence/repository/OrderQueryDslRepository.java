@@ -1,6 +1,7 @@
 package spring.playground.springdata.persistence.repository;
 
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
@@ -58,6 +59,7 @@ public class OrderQueryDslRepository {
     }
     // 만약 페이징 쿼리가 복잡해지는 경우, 실제 컨텐츠를 가져오는 쿼리와 Count 를 가져오는 쿼리가 다를 수 있음(성능 최적화)
     // 따라서, 복잡하고 성능이 중요한 경우 fetchResults() 를 사용하지 않고 쿼리 두번을 사용하는 것이 좋음
+    // 전체 조회수가 필요한 경우 사용하기도 함
     public QueryResults<Order> fetchResults(OrderSearch orderSearch) {
         return jpaQueryFactory
                 .selectFrom(order)
@@ -65,6 +67,18 @@ public class OrderQueryDslRepository {
                         orderStatus(orderSearch.getOrderStatus()),
                         nameContains(orderSearch.getMemberName())
                 )
+                .fetchResults();
+    }
+
+    public QueryResults<Order> fetchResultsWithPaging(OrderSearch orderSearch) {
+        return jpaQueryFactory
+                .selectFrom(order)
+                .where(
+                        orderStatus(orderSearch.getOrderStatus()),
+                        nameContains(orderSearch.getMemberName())
+                )
+                .offset(orderSearch.getOffset())
+                .limit(orderSearch.getLimit())
                 .fetchResults();
     }
 
