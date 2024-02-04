@@ -34,6 +34,7 @@ class OrderQueryDslRepositoryTest {
     private final OrderStep orderStep;
     private final DatabaseCleanup databaseCleanup;
     private int orderItemPrice;
+    private int orderCount;
 
     @Autowired
     OrderQueryDslRepositoryTest(OrderQueryDslRepository orderQueryDslRepository,
@@ -47,7 +48,8 @@ class OrderQueryDslRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        for (int i = 0; i < 10; i++) {
+        orderCount = 10;
+        for (int i = 0; i < orderCount; i++) {
             Member member = orderStep.saveMember("test" + i);
             orderItemPrice = 1000;
             Album album = orderStep.saveAlbum("album" + i, orderItemPrice, 10);
@@ -320,12 +322,13 @@ class OrderQueryDslRepositoryTest {
 
     @Test
     @DisplayName("Groyup by 테스트: 고객명 별 평균 주문 아이템 수")
+    @Transactional
     void fetchOrdersGroupByMemberName() {
         // given
         String memberName = "test0";
         Member member = orderStep.saveMember(memberName);
-        int newItemPrice = 2000;
-        Album album = orderStep.saveAlbum("album for test0 member" , newItemPrice, 10);
+        int newOrderItemPrice = 2000;
+        Album album = orderStep.saveAlbum("album for test0 member" , newOrderItemPrice, 10);
         Category category = orderStep.addCategory(album);
         album.setCategories(new ArrayList<>());
         album.getCategories().add(category);
@@ -334,20 +337,20 @@ class OrderQueryDslRepositoryTest {
 
         OrderSearch orderSearch = new OrderSearch();
         orderSearch.setOrderStatus(OrderStatus.ORDER);
-        orderSearch.setMemberName(memberName);
-
 
         // when
         List<Tuple> orders = orderQueryDslRepository.fetchOrdersWithGroupBy(orderSearch);
 
         // then
         Tuple orderTuple = orders.get(0);
-        String customerName = orderTuple.get(QMember.member.name);
+        String targetCustomerName = orderTuple.get(QMember.member.name);
         Double averageOrderAmount = orderTuple.get(QOrderItem.orderItem.orderPrice.avg());
 
-        int averageOrderItemPrice = (orderItemPrice + newItemPrice) / 2;
 
-        assertEquals(memberName, customerName);
+        int averageOrderItemPrice = (orderItemPrice + newOrderItemPrice) / 2;
+
+        assertEquals(orders.size(), 10);
+        assertEquals(targetCustomerName, memberName);
         assertEquals(averageOrderItemPrice, averageOrderAmount.intValue());
     }
 }

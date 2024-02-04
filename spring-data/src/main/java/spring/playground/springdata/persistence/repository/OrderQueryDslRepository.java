@@ -129,8 +129,11 @@ public class OrderQueryDslRepository {
      * having
      *
      * data 타입(selcet 필회)이 여러개로 들어올 때는 Tuple 을 사용한다.
-     * 단, 실무에서 Tuple 을 잘 쓰지는 않고 Dto 를 사용한다고 한다.
-     * 출처: https://nomoreft.tistory.com/29 [개인용 뇌 도서관:티스토리]
+     *   - Tuple 은 Querydsl 의 특징이다.
+     *   - Tuple 은 여러 타입을 담을 수 있는 컨테이너이다.
+     *   - Tuple 은 여러 타입을 담을 수 있지만, 실무에서는 잘 사용하지 않으며, Dto 를 사용한다.
+     *   - Tuple.get() 을 사용하여 값을 꺼내올 수 있다.
+     *   - Tuple.get(0) 은 첫번째 값, Tuple.get(1) 은 두번째 값이다.
      */
 
     // 고객의 이름애 따른 평균 주문 금액 조회
@@ -145,6 +148,7 @@ public class OrderQueryDslRepository {
                         nameContains(orderSearch.getMemberName())
                 )
                 .groupBy(member.name)
+                .orderBy(member.name.asc())
                 .fetch();
     }
 
