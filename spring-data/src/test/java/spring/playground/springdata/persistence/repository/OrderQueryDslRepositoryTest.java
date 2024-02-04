@@ -2,6 +2,7 @@ package spring.playground.springdata.persistence.repository;
 
 import com.querydsl.core.NonUniqueResultException;
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.Tuple;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,9 +15,11 @@ import spring.playground.springdata.persistence.OrderStep;
 import spring.playground.springdata.persistence.entity.common.Category;
 import spring.playground.springdata.persistence.entity.item.Album;
 import spring.playground.springdata.persistence.entity.member.Member;
+import spring.playground.springdata.persistence.entity.member.QMember;
 import spring.playground.springdata.persistence.entity.order.Order;
 import spring.playground.springdata.persistence.entity.order.OrderSearch;
 import spring.playground.springdata.persistence.entity.order.OrderStatus;
+import spring.playground.springdata.persistence.entity.order.QOrderItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +33,7 @@ class OrderQueryDslRepositoryTest {
     private final ItemJpaRepository itemJpaRepository;
     private final OrderStep orderStep;
     private final DatabaseCleanup databaseCleanup;
+    private int orderItemPrice;
 
     @Autowired
     OrderQueryDslRepositoryTest(OrderQueryDslRepository orderQueryDslRepository,
@@ -45,7 +49,8 @@ class OrderQueryDslRepositoryTest {
     void setUp() {
         for (int i = 0; i < 10; i++) {
             Member member = orderStep.saveMember("test" + i);
-            Album album = orderStep.saveAlbum("album" + i, 1000, 10);
+            orderItemPrice = 1000;
+            Album album = orderStep.saveAlbum("album" + i, orderItemPrice, 10);
             Category category = orderStep.addCategory(album);
             album.setCategories(new ArrayList<>());
             album.getCategories().add(category);
@@ -311,5 +316,38 @@ class OrderQueryDslRepositoryTest {
         assertEquals(10, orders.getTotal());
         assertEquals(5, content.size());
         assertEquals(content.size(), limit);
+    }
+
+    @Test
+    @DisplayName("Groyup by 테스트: 고객명 별 평균 주문 아이템 수")
+    void fetchOrdersGroupByMemberName() {
+        // given
+        String memberName = "test0";
+        Member member = orderStep.saveMember(memberName);
+        int newItemPrice = 2000;
+        Album album = orderStep.saveAlbum("album for test0 member" , newItemPrice, 10);
+        Category category = orderStep.addCategory(album);
+        album.setCategories(new ArrayList<>());
+        album.getCategories().add(category);
+        itemJpaRepository.save(album);
+        orderStep.createOrder(member, album.getId());
+
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+        orderSearch.setMemberName(memberName);
+
+
+        // when
+        List<Tuple> orders = orderQueryDslRepository.fetchOrdersWithGroupBy(orderSearch);
+
+        // then
+        Tuple orderTuple = orders.get(0);
+        String customerName = orderTuple.get(QMember.member.name);
+        Double averageOrderAmount = orderTuple.get(QOrderItem.orderItem.orderPrice.avg());
+
+        int averageOrderItemPrice = (orderItemPrice + newItemPrice) / 2;
+
+        assertEquals(memberName, customerName);
+        assertEquals(averageOrderItemPrice, averageOrderAmount.intValue());
     }
 }
