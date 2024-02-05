@@ -3,6 +3,8 @@ package spring.playground.springdata.persistence.repository;
 import com.querydsl.core.NonUniqueResultException;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -352,5 +354,41 @@ class OrderQueryDslRepositoryTest {
         assertEquals(orders.size(), 10);
         assertEquals(targetCustomerName, memberName);
         assertEquals(averageOrderItemPrice, averageOrderAmount.intValue());
+    }
+
+    @PersistenceUnit
+    EntityManagerFactory emf;
+
+
+    @Test
+    @DisplayName("Fetch Join 미적용 확인")
+    void fetchOrdersWithoutFetchJoin() {
+        // given
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+        orderSearch.setMemberName("test0");
+
+        // when
+        Order orders = orderQueryDslRepository.fetchOneOrder(orderSearch);
+
+        // then
+        boolean loaded = emf.getPersistenceUnitUtil().isLoaded(orders.getOrderItems());
+        assertEquals(false, loaded);
+    }
+
+    @Test
+    @DisplayName("Fetch Join 적용 확인")
+    void fetchOrdersWithFetchJoin() {
+        // given
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+        orderSearch.setMemberName("test0");
+
+        // when
+        Order orders = orderQueryDslRepository.fetchOneOrderWithFetchJoin(orderSearch);
+
+        // then
+        boolean loaded = emf.getPersistenceUnitUtil().isLoaded(orders.getOrderItems());
+        assertEquals(true, loaded);
     }
 }

@@ -159,4 +159,16 @@ public class OrderQueryDslRepository {
     private static BooleanExpression nameContains(String memberName) {
         return memberName != null ? order.member.name.eq(memberName) : null;
     }
+
+    public Order fetchOneOrderWithFetchJoin(OrderSearch orderSearch) {
+        return jpaQueryFactory
+                .selectFrom(order)
+                .join(order.member, member).fetchJoin()
+                .join(order.orderItems, orderItem).fetchJoin()
+                .where(
+                        orderStatus(orderSearch.getOrderStatus()),
+                        nameContains(orderSearch.getMemberName())
+                )
+                .fetchOne();
+    }
 }
