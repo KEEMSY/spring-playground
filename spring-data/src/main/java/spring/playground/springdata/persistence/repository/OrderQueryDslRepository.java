@@ -129,7 +129,8 @@ public class OrderQueryDslRepository {
      * having
      *
      * data 타입(selcet 필회)이 여러개로 들어올 때는 Tuple 을 사용한다.
-     *   - Tuple 은 Querydsl 의 특징이다.
+     *   - Tuple 은 Querydsl 의 특징이자 Querydsl 에 종속됨을 표현한다.
+     *   - Repository 에서 Tuple 을 조회한 뒤 다른 계층으로 전달할 때에 DTO 로 변환하여 사용하는 것이 좋다.
      *   - Tuple 은 여러 타입을 담을 수 있는 컨테이너이다.
      *   - Tuple 은 여러 타입을 담을 수 있지만, 실무에서는 잘 사용하지 않으며, Dto 를 사용한다.
      *   - Tuple.get() 을 사용하여 값을 꺼내올 수 있다.
@@ -152,14 +153,14 @@ public class OrderQueryDslRepository {
                 .fetch();
     }
 
-    private static BooleanExpression orderStatus(OrderStatus orderStatus) {
-        return order.status.eq(orderStatus);
-    }
-
-    private static BooleanExpression nameContains(String memberName) {
-        return memberName != null ? order.member.name.eq(memberName) : null;
-    }
-
+    /**
+     *   join(조인 대상, 별칭으로 사용할 Q타입)
+     *   - join(), innerJoin(): 내부 조인(inner jpin)
+     *   - leftJoin(): 왼쪽 외부 조인(left outer join)
+     *   - rightJoin(): 오른쪽 외부 조인(right outer join)
+     *   - on(): 조인 대상 필터링
+     *   - fetchJoin(): 연관된 엔티티를 SQL 한번에 조회(성능 최적화
+     */
     public Order fetchOneOrderWithFetchJoin(OrderSearch orderSearch) {
         return jpaQueryFactory
                 .selectFrom(order)
