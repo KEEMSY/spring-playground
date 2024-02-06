@@ -2,6 +2,7 @@ package spring.playground.springdata.persistence.repository;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
@@ -172,4 +173,27 @@ public class OrderQueryDslRepository {
                 )
                 .fetchOne();
     }
+
+    public List<OrderDTOByUsingSetter> fetchOrdersWithSetter(OrderSearch orderSearch) {
+        return jpaQueryFactory
+                .select(Projections.bean(OrderDTOByUsingSetter.class, order.status, member.name))
+                .from(order)
+                .join(order.member, member)
+                .where(
+                        orderStatus(orderSearch.getOrderStatus()),
+                        nameContains(orderSearch.getMemberName())
+                )
+                .fetch();
+    }
+
+
+    private static BooleanExpression orderStatus(OrderStatus orderStatus) {
+        return order.status.eq(orderStatus);
+    }
+
+    private static BooleanExpression nameContains(String memberName) {
+        return memberName != null ? order.member.name.eq(memberName) : null;
+    }
+
+    // Case 를 활용하여, 조건에 따른 값을 가져오기 보다는, 값을 가져온 뒤 애플리케이션 레벨에서 처리를 하는 것이 좋다.
 }

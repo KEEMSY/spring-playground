@@ -26,8 +26,9 @@ import spring.playground.springdata.persistence.entity.order.QOrderItem;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 
 @SpringBootTest
 class OrderQueryDslRepositoryTest {
@@ -390,5 +391,24 @@ class OrderQueryDslRepositoryTest {
         // then
         boolean loaded = emf.getPersistenceUnitUtil().isLoaded(orders.getOrderItems());
         assertEquals(true, loaded);
+    }
+
+    @Test
+    @DisplayName("DTO 조회 테스트: Setter 를 활용하는 방법")
+    @Transactional
+    void fetchOrdersWithSetter() {
+        // given
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+        orderSearch.setMemberName("test0");
+
+        // when
+        List<OrderDTOByUsingSetter> orders = orderQueryDslRepository.fetchOrdersWithSetter(orderSearch);
+
+        // then
+        System.out.println(orders);
+        System.out.println(orders.get(0).getName());
+        assertEquals(1, orders.size());
+        assertEquals("test0", orders.get(0).getName());
     }
 }
