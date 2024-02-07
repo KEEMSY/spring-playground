@@ -1,20 +1,23 @@
 package spring.playground.springdata.persistence.repository;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import spring.playground.springdata.persistence.entity.order.OrderStatus;
 
 /**
  * Default 생성자를 넣거나 @NoArgsConstructor 를 사용 해야함
- * Setter 를 통해 값을 지정하는 방법임
+ * fetchOrdersWithSetter() 메소드에서 OrderDTOByUsingSetter 를 사용하고 있음
  * Entity 내 선언된 필드 명을 동일하게 해야함
  */
 @Data
+@NoArgsConstructor
 public class OrderDTOByUsingSetter {
     private String name;
     private OrderStatus orderStatus;
 
-    public OrderDTOByUsingSetter() {
-    }
+    // Default 생성자를 넣거나 @NoArgsConstructor 를 사용 해야함
+//    public OrderDTOByUsingSetter() {
+//    }
 
     public OrderDTOByUsingSetter(String name, OrderStatus orderStatus) {
         this.name = name;

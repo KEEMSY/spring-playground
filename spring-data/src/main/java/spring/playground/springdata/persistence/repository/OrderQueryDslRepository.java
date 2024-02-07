@@ -173,7 +173,8 @@ public class OrderQueryDslRepository {
                 )
                 .fetchOne();
     }
-
+    // Setter 를 사용하여 값을 가져올 때에는, Projections.bean() 을 사용한다.
+    // Entity 내 선언된 필드 명을 동일하게 해야함
     public List<OrderDTOByUsingSetter> fetchOrdersWithSetter(OrderSearch orderSearch) {
         return jpaQueryFactory
                 .select(Projections.bean(OrderDTOByUsingSetter.class, order.status, member.name))
@@ -186,6 +187,31 @@ public class OrderQueryDslRepository {
                 .fetch();
     }
 
+    // Field 를 사용하여 값을 가져올 때에는, Projections.fields() 를 사용한다.
+    public List<OrderDTOByUsingField> fetchOrdersWithField(OrderSearch orderSearch) {
+        return jpaQueryFactory
+                .select(Projections.fields(OrderDTOByUsingField.class,
+                        order.status, member.name.as("memberName"))    // as 를 사용하여, 이름을 변경할 수 있다.
+                )
+                .from(order)
+                .join(order.member, member)
+                .where(
+                        orderStatus(orderSearch.getOrderStatus()),
+                        nameContains(orderSearch.getMemberName())
+                )
+                .fetch();
+    }
+
+
+    public List<Order> fetchOrdersWithMemberThetaJoin() {
+        return jpaQueryFactory
+                .select(order)
+                .from(order, member)
+                .where(
+                        order.status.stringValue().eq(member.name)
+                )
+                .fetch();
+    }
 
     private static BooleanExpression orderStatus(OrderStatus orderStatus) {
         return order.status.eq(orderStatus);

@@ -411,4 +411,54 @@ class OrderQueryDslRepositoryTest {
         assertEquals(1, orders.size());
         assertEquals("test0", orders.get(0).getName());
     }
+
+    @Test
+    @DisplayName("DTO 조회 테스트: Field 를 활용하는 방법")
+    @Transactional
+    void fetchOrdersWithField() {
+        // given
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+        orderSearch.setMemberName("test0");
+
+        // when
+        List<OrderDTOByUsingField> orders = orderQueryDslRepository.fetchOrdersWithField(orderSearch);
+
+        // then
+        assertEquals(1, orders.size());
+        assertEquals("test0", orders.get(0).getMemberName());
+    }
+
+
+
+    @Test
+    @DisplayName(("theta join 테스트"))
+//    @Transactional
+    void fetchOrdersWithThetaJoin() {
+        // given
+        String memberName = OrderStatus.ORDER.toString();
+        Member member = orderStep.saveMember(memberName);
+        int newOrderItemPrice = 2000;
+        Album album = orderStep.saveAlbum("ORDER" , newOrderItemPrice, 10);
+        Category category = orderStep.addCategory(album);
+        album.setCategories(new ArrayList<>());
+        album.getCategories().add(category);
+        itemJpaRepository.save(album);
+        orderStep.createOrder(member, album.getId());
+
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+
+        // when
+        List<Order> orders = orderQueryDslRepository.fetchOrdersWithMemberThetaJoin();
+
+        // then
+        for (Order order : orders) {
+            System.out.println(order.getMember().getName());
+            System.out.println(order.getStatus());
+
+        }
+        assertEquals(1, orders.size());
+        assertEquals(memberName, orders.get(0).getMember().getName());
+    }
 }
