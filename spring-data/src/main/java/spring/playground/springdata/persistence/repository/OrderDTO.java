@@ -11,15 +11,14 @@ import spring.playground.springdata.persistence.entity.order.OrderStatus;
  */
 @Data
 @NoArgsConstructor
-public class OrderDTOByUsingSetter {
+public class OrderDTO {
     private String name;
     private OrderStatus orderStatus;
 
-    // Default 생성자를 넣거나 @NoArgsConstructor 를 사용 해야함
 //    public OrderDTOByUsingSetter() {
 //    }
 
-    public OrderDTOByUsingSetter(String name, OrderStatus orderStatus) {
+    public OrderDTO(String name, OrderStatus orderStatus) {
         this.name = name;
         this.orderStatus = orderStatus;
     }

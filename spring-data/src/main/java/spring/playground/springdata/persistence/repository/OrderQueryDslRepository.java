@@ -175,9 +175,9 @@ public class OrderQueryDslRepository {
     }
     // Setter 를 사용하여 값을 가져올 때에는, Projections.bean() 을 사용한다.
     // Entity 내 선언된 필드 명을 동일하게 해야함
-    public List<OrderDTOByUsingSetter> fetchOrdersWithSetter(OrderSearch orderSearch) {
+    public List<OrderDTO> fetchOrdersWithSetter(OrderSearch orderSearch) {
         return jpaQueryFactory
-                .select(Projections.bean(OrderDTOByUsingSetter.class, order.status, member.name))
+                .select(Projections.bean(OrderDTO.class, order.status, member.name))
                 .from(order)
                 .join(order.member, member)
                 .where(
@@ -186,6 +186,20 @@ public class OrderQueryDslRepository {
                 )
                 .fetch();
     }
+
+    // 생성자를 활용하는 방법
+    public List<OrderDTOWithConstructor> fetchOrdersWithConstructor(OrderSearch orderSearch) {
+        return jpaQueryFactory
+                .select(Projections.constructor(OrderDTOWithConstructor.class, member.name, order.status))
+                .from(order)
+                .join(order.member, member)
+                .where(
+                        orderStatus(orderSearch.getOrderStatus()),
+                        nameContains(orderSearch.getMemberName())
+                )
+                .fetch();
+    }
+
 
     // Field 를 사용하여 값을 가져올 때에는, Projections.fields() 를 사용한다.
     public List<OrderDTOByUsingField> fetchOrdersWithField(OrderSearch orderSearch) {

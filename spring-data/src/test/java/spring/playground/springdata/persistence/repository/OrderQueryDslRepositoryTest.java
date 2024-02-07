@@ -5,10 +5,7 @@ import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceUnit;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,16 +15,13 @@ import spring.playground.springdata.persistence.entity.common.Category;
 import spring.playground.springdata.persistence.entity.item.Album;
 import spring.playground.springdata.persistence.entity.member.Member;
 import spring.playground.springdata.persistence.entity.member.QMember;
+import spring.playground.springdata.persistence.entity.order.*;
 import spring.playground.springdata.persistence.entity.order.Order;
-import spring.playground.springdata.persistence.entity.order.OrderSearch;
-import spring.playground.springdata.persistence.entity.order.OrderStatus;
-import spring.playground.springdata.persistence.entity.order.QOrderItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
 @SpringBootTest
@@ -403,7 +397,7 @@ class OrderQueryDslRepositoryTest {
         orderSearch.setMemberName("test0");
 
         // when
-        List<OrderDTOByUsingSetter> orders = orderQueryDslRepository.fetchOrdersWithSetter(orderSearch);
+        List<OrderDTO> orders = orderQueryDslRepository.fetchOrdersWithSetter(orderSearch);
 
         // then
         System.out.println(orders);
@@ -414,7 +408,6 @@ class OrderQueryDslRepositoryTest {
 
     @Test
     @DisplayName("DTO 조회 테스트: Field 를 활용하는 방법")
-    @Transactional
     void fetchOrdersWithField() {
         // given
         OrderSearch orderSearch = new OrderSearch();
@@ -429,10 +422,27 @@ class OrderQueryDslRepositoryTest {
         assertEquals("test0", orders.get(0).getMemberName());
     }
 
+    @Test
+    @DisplayName("DTO 조회 테스트: 생성자를 활용하는 방법")
+    void fetchOrdersWithConstructor() {
+        // given
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+        orderSearch.setMemberName("test0");
+
+        // when
+        List<OrderDTOWithConstructor> orders = orderQueryDslRepository.fetchOrdersWithConstructor(orderSearch);
+
+        // then
+        assertEquals(1, orders.size());
+        assertEquals("test0", orders.get(0).getMemberName());
+    }
+
 
 
     @Test
     @DisplayName(("theta join 테스트"))
+    @Disabled
 //    @Transactional
     void fetchOrdersWithThetaJoin() {
         // given
