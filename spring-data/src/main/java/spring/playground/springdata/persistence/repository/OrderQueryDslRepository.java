@@ -235,5 +235,13 @@ public class OrderQueryDslRepository {
         return memberName != null ? order.member.name.eq(memberName) : null;
     }
 
+    // 조합을 통해 동적 쿼리를 만들 수 있다. -> 다른 조건에서, 특정 기간에만 주문 가능한 상품 등 조합을 통해 만들 수 있다.
+    // 여러 조건을 조합한 것을 하나의 메서드로 만들고, 여러 다른 쿼리에서도 재활용 할 수 있음 + 쿼리 자체의 가독성이 증진되는 장점
+    // 단  null 체크는 주의해서 처리해야 한다.
+    private BooleanExpression allEq(OrderSearch orderSearch) {
+        return orderStatus(orderSearch.getOrderStatus())
+                .and(nameContains(orderSearch.getMemberName()));
+    }
+
     // Case 를 활용하여, 조건에 따른 값을 가져오기 보다는, 값을 가져온 뒤 애플리케이션 레벨에서 처리를 하는 것이 좋다.
 }
