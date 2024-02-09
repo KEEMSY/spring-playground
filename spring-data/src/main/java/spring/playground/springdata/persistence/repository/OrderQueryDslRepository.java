@@ -228,7 +228,7 @@ public class OrderQueryDslRepository {
     }
 
     private static BooleanExpression orderStatus(OrderStatus orderStatus) {
-        return order.status.eq(orderStatus);
+        return orderStatus != null ? order.status.eq(orderStatus) : null;
     }
 
     private static BooleanExpression nameContains(String memberName) {
