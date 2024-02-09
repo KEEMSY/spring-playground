@@ -4,6 +4,7 @@ import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 import spring.playground.springdata.persistence.entity.order.Order;
@@ -225,6 +226,58 @@ public class OrderQueryDslRepository {
                         order.status.stringValue().eq(member.name)
                 )
                 .fetch();
+    }
+
+    // DB 와 영속성 켄텍스트의 내용이 달라지는 것에 주의
+    // - 영속성 컨텍스트를 무시하고, 바로 DB 에 업데이트를 하기 때문에, 영속성 컨텍스트의 내용이 달라질 수 있다.
+    // - 따라서, bulk 연산 뒤에는 영속성 컨텍스트를 맞추기 위해, 해당 작업 이후, flush() 를 사용하여 영속성 컨텍스트를 맞추고, DB 와 맞춘뒤
+    //   clear() 를 사용하여 영속성 컨텍스트를 초기화 해주는 것이 좋다.
+    public long bulkUpdateOrderStatus(OrderSearch orderSearch) {
+
+        return jpaQueryFactory
+                .update(order)
+                .set(order.status, orderSearch.getOrderStatus())
+                .where(
+                        nameContains(orderSearch.getMemberName())
+                )
+                .execute();
+    }
+
+    public long bulkDeleteOrderByOrderStatus(OrderSearch orderSearch) {
+        // 연관관계가 있는 OrderItem 을 삭제해야 함
+        jpaQueryFactory
+                .delete(orderItem)
+                .where(
+                        orderItem.order.status.eq(orderSearch.getOrderStatus()),
+                        orderItem.order.in(
+                                JPAExpressions
+                                        .select(order)
+                                        .from(order)
+                                        .where(nameContains(orderSearch.getMemberName()))
+                        )
+                )
+                .execute();
+
+
+        return jpaQueryFactory
+                .delete(order)
+                .where(orderStatus(orderSearch.getOrderStatus()))
+                .execute();
+    }
+
+    // OrderItem 연산이긴하나, 잊지 않기위해.. 작성..!
+    public long bulkAddOrderItemPrice(int price) {
+        return jpaQueryFactory
+                .update(orderItem)
+                .set(orderItem.orderPrice, orderItem.orderPrice.add(price))
+                .execute();
+    }
+
+    public long bulkMultiplyOrderItemPrice(int price) {
+        return jpaQueryFactory
+                .update(orderItem)
+                .set(orderItem.orderPrice, orderItem.orderPrice.multiply(price))
+                .execute();
     }
 
     private static BooleanExpression orderStatus(OrderStatus orderStatus) {

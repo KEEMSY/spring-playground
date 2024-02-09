@@ -3,7 +3,9 @@ package spring.playground.springdata.persistence.repository;
 import com.querydsl.core.NonUniqueResultException;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceUnit;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,8 @@ class OrderQueryDslRepositoryTest {
     private final ItemJpaRepository itemJpaRepository;
     private final OrderStep orderStep;
     private final DatabaseCleanup databaseCleanup;
+    @PersistenceContext
+    private EntityManager em;
     private int orderItemPrice;
     private int orderCount;
 
@@ -438,7 +442,59 @@ class OrderQueryDslRepositoryTest {
         assertEquals("test0", orders.get(0).getMemberName());
     }
 
+    @Test
+    @DisplayName("Bulk bulkUpdateOrderStatus 테스트")
+    @Transactional
+    void bulkUpdate() {
+        // given
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.CANCEL);
+        orderSearch.setMemberName("test0");
 
+        // when
+        long count = orderQueryDslRepository.bulkUpdateOrderStatus(orderSearch);
+
+        // then
+        orderSearch = new OrderSearch();
+        orderSearch.setMemberName("test0");
+
+        em.flush();
+        em.clear();
+        
+        Order order = orderQueryDslRepository.fetchOneOrder(orderSearch);
+
+
+        assertEquals(OrderStatus.CANCEL, order.getStatus());
+    }
+
+    @Test
+    @DisplayName("Bulk bulkDeleteOrderStatus 테스트")
+    @Transactional
+    void bulkDelete() {
+        // given
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.CANCEL);
+        orderSearch.setMemberName("test0");
+
+        long count = orderQueryDslRepository.bulkUpdateOrderStatus(orderSearch);
+
+        em.flush();
+        em.clear();
+
+        // when
+        orderQueryDslRepository.bulkDeleteOrderByOrderStatus(orderSearch);
+
+        // then
+        orderSearch = new OrderSearch();
+        orderSearch.setMemberName("test0");
+
+        em.flush();
+        em.clear();
+
+        List<Order> orders = orderQueryDslRepository.fetchOrders();
+
+        assertEquals(9, orders.size());
+    }
 
     @Test
     @DisplayName(("theta join 테스트"))
