@@ -4,6 +4,7 @@ import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
@@ -278,6 +279,23 @@ public class OrderQueryDslRepository {
                 .update(orderItem)
                 .set(orderItem.orderPrice, orderItem.orderPrice.multiply(price))
                 .execute();
+    }
+
+    // SQL 함수 사용 가능
+    // - SQL 함수를 사용할 때에는, Expressions.stringTemplate() 을 사용하여, 사용할 수 있다.
+    // - 기본적으로 제공되는 메서드를 활용하는게 더 유용할 때가 있음에 주의한다.
+    public List<String> fetchOrderMemberName(OrderSearch orderSearch) {
+        return jpaQueryFactory
+                .select(order.member.name)
+                .from(order)
+                .where(order.member.name
+                        .eq(Expressions.stringTemplate("function('upper', {0})", orderSearch.getMemberName())),
+                        nameContains(orderSearch.getMemberName())
+                )
+//                .where(
+//                        order.member.name.upper().eq(orderSearch.getMemberName())
+//                )
+                .fetch();
     }
 
     private static BooleanExpression orderStatus(OrderStatus orderStatus) {

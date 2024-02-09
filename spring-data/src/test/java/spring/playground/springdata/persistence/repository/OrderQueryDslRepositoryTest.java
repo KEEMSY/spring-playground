@@ -497,6 +497,22 @@ class OrderQueryDslRepositoryTest {
     }
 
     @Test
+    @DisplayName("SQL Function 테스트: upper() 함수를 사용하여 소문자를 대문자로 변경하여 조회")
+    void fetchOrdersWithSQLFunction() {
+        // given
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+        orderSearch.setMemberName("TEST0");
+
+        // when
+        List<String> upperOrderMemberNames = orderQueryDslRepository.fetchOrderMemberName(orderSearch);
+
+        // then
+        assertEquals(1, upperOrderMemberNames.size());
+        assertEquals("test0", upperOrderMemberNames.get(0));
+    }
+
+    @Test
     @DisplayName(("theta join 테스트"))
     @Disabled
 //    @Transactional
