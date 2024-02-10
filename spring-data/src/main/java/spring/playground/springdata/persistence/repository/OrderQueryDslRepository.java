@@ -218,6 +218,24 @@ public class OrderQueryDslRepository {
                 .fetch();
     }
 
+    // QueryProjection 을 사용하여, DTO 를 사용할 수 있다.
+    // - 컴파일러로 타입을 체크할 수 있으므로 가장 안전한 방법
+    // - 다만 DTO 가 Querydsl 에 의존하게 되므로, DTO 를 사용하는 계층이 Querydsl 에 의존하게 된다.
+    //   - DTO 에 QueryDSL 어노테이션을 유지해야한다는 점, DTO 까지 Q 파일을 생성해야 한다는 단점이 존재한다.
+    // - 순서를 맞춰야 함을 주의
+    public List<OrderDTOByUsingQueryProjection> fetchOrdersWithQueryProjection(OrderSearch orderSearch) {
+        return jpaQueryFactory
+                .select(new QOrderDTOByUsingQueryProjection(
+                        member.name, order.status.stringValue())
+                )
+                .from(order)
+                .join(order.member, member)
+                .where(
+                        orderStatus(orderSearch.getOrderStatus()),
+                        nameContains(orderSearch.getMemberName())
+                )
+                .fetch();
+    }
 
     public List<Order> fetchOrdersWithMemberThetaJoin() {
         return jpaQueryFactory

@@ -443,6 +443,22 @@ class OrderQueryDslRepositoryTest {
     }
 
     @Test
+    @DisplayName("DTO 조회 테스트: QueryProjection 을 활용하는 방법")
+    void fetchOrdersWithQueryProjection() {
+        // given
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+        orderSearch.setMemberName("test0");
+
+        // when
+        List<OrderDTOByUsingQueryProjection> orders = orderQueryDslRepository.fetchOrdersWithQueryProjection(orderSearch);
+
+        // then
+        assertEquals(1, orders.size());
+        assertEquals("test0", orders.get(0).getMemberName());
+    }
+
+    @Test
     @DisplayName("Bulk bulkUpdateOrderStatus 테스트")
     @Transactional
     void bulkUpdate() {
