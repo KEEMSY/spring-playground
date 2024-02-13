@@ -7,6 +7,9 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import spring.playground.springdata.persistence.entity.order.Order;
 import spring.playground.springdata.persistence.entity.order.OrderSearch;
@@ -314,6 +317,38 @@ public class OrderQueryDslRepository {
 //                        order.member.name.upper().eq(orderSearch.getMemberName())
 //                )
                 .fetch();
+    }
+
+
+    /*
+    단순한 페이징, fetchResults() 를 사용하여 페이징을 처리할 수 있다.
+    - fetchResults() 를 사용하면, 쿼리를 두번 발생함을 잊지말자.
+    - fetchResults() 를 사용하면, Order By 는 무의미해 지므로 사용하지 않는다.
+      - fetchResults() 메서드를 사용하면, 결과를 가져오는 동안에 페이징 처리를 수행한다. 즉, 결과 세트를 여러 페이지로 분할한다.
+        그런데 ORDER BY 절을 사용하면, 데이터베이스는 모든 결과를 먼저 정렬하고 나서야 필요한 일부 결과만 반환한다.
+        이는 오히려 성능 저하를 일으킬 수 있다.
+
+따라서, 페이징 처리를 위해 fetchResults()를 사용하는 경우에는 ORDER BY 절의 사용이 무의미해지는 것이 아니라, 오히려 성능을 최적화하는 데 도움이 될 수 있습니다.
+    */
+    public Page<OrderDTOByUsingQueryProjection> fetchOrdersWithPagingByFetchResults(OrderSearch orderSearch, Pageable pageable) {
+        QueryResults<OrderDTOByUsingQueryProjection> results = jpaQueryFactory
+                .select(new QOrderDTOByUsingQueryProjection(
+                        member.name, order.status.stringValue())
+                )
+                .from(order)
+                .join(order.member, member)
+                .where(
+                        orderStatus(orderSearch.getOrderStatus()),
+                        nameContains(orderSearch.getMemberName())
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<OrderDTOByUsingQueryProjection> content = results.getResults();
+        long total = results.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
     }
 
     private static BooleanExpression orderStatus(OrderStatus orderStatus) {

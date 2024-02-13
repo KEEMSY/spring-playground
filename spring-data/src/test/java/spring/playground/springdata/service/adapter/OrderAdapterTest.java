@@ -6,6 +6,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 import spring.playground.springdata.DatabaseCleanup;
 import spring.playground.springdata.exception.NotEnoughStockException;
@@ -18,9 +20,7 @@ import spring.playground.springdata.persistence.entity.order.DeliveryStatus;
 import spring.playground.springdata.persistence.entity.order.Order;
 import spring.playground.springdata.persistence.entity.order.OrderSearch;
 import spring.playground.springdata.persistence.entity.order.OrderStatus;
-import spring.playground.springdata.persistence.repository.ItemJpaRepository;
-import spring.playground.springdata.persistence.repository.MemberJpaRepository;
-import spring.playground.springdata.persistence.repository.OrderJpaRepository;
+import spring.playground.springdata.persistence.repository.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +50,7 @@ class OrderAdapterTest {
     }
 
     @AfterEach
-    void setUp() {
+    void cleanUp() {
         databaseCleanup.execute();
     }
 
@@ -312,6 +312,53 @@ class OrderAdapterTest {
         // then
         assertThat(orders.size()).isEqualTo(2);
         assertThat(orders.get(0).getOrderItems().size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("Pageable 주문 조회 테스트")
+    void searchPageSimple() {
+        // given
+        Member member = saveMember("test");
+
+        Album album = new Album();
+        album.setName("Album Title");
+        album.setPrice(20);
+        album.setStockQuantity(50);
+        album.setArtist("Artist Name");
+        album.setEtc("Other Album Details");
+
+        Album album2 = new Album();
+        album2.setName("Album Title2");
+        album2.setPrice(20);
+        album2.setStockQuantity(50);
+        album2.setArtist("Artist Name2");
+        album2.setEtc("Other Album Details2");
+
+        Category category = addCategory(album);
+
+        album.setCategories(new ArrayList<>());
+        album2.setCategories(new ArrayList<>());
+
+        album.getCategories().add(category);
+        album2.getCategories().add(category);
+
+        itemJpaRepository.save(album);
+
+        orderAdapter.order(member.getId(), album.getId(), 1);
+        orderAdapter.order(member.getId(), album.getId(), 1);
+
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+
+        // when
+        Page<OrderDTOByUsingQueryProjection> orders = orderAdapter.searchPageSimple(orderSearch, PageRequest.of(0, 10));
+        List<OrderDTOByUsingQueryProjection> content = orders.getContent();
+        long totalElements = orders.getTotalElements();
+
+        // then
+        assertThat(content.size()).isEqualTo(2);
+        assertThat(totalElements).isEqualTo(2);
+
     }
 
     @NotNull

@@ -1,14 +1,13 @@
 package spring.playground.springdata.service.adapter;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import spring.playground.springdata.persistence.entity.item.Item;
 import spring.playground.springdata.persistence.entity.member.Member;
 import spring.playground.springdata.persistence.entity.order.*;
-import spring.playground.springdata.persistence.repository.ItemJpaRepository;
-import spring.playground.springdata.persistence.repository.MemberJpaRepository;
-import spring.playground.springdata.persistence.repository.OrderJpaRepository;
-import spring.playground.springdata.persistence.repository.OrderQueryDslRepository;
+import spring.playground.springdata.persistence.repository.*;
 import spring.playground.springdata.service.OrderPort;
 
 import java.util.List;
@@ -65,5 +64,10 @@ public class OrderAdapter implements OrderPort {
     @Override
     public List<Order> findOrders(OrderSearch orderSearch) {
         return orderQueryDslRepository.findOrdersWith(orderSearch);
+    }
+
+    @Override
+    public Page<OrderDTOByUsingQueryProjection> searchPageSimple(OrderSearch orderSearch, Pageable pageable) {
+        return orderQueryDslRepository.fetchOrdersWithPagingByFetchResults(orderSearch, pageable);
     }
 }
