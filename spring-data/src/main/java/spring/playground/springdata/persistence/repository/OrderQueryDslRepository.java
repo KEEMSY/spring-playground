@@ -6,10 +6,12 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import spring.playground.springdata.persistence.entity.order.Order;
 import spring.playground.springdata.persistence.entity.order.OrderSearch;
@@ -385,7 +387,39 @@ public class OrderQueryDslRepository {
                 .fetchCount();
 
         return new PageImpl<>(content, pageable, total);
+    }
 
+    /*
+    최적화된 카운트 쿼리를 사용한 페이징
+    - count 쿼리가 생략 가능한 경우 생략해서 처리 하는 방법
+    - 페이지 시작이면서 컨텐츠 사이즈가 페이지 사이즈보다 작을 때
+    - 마지막 페이지 일 때 (offset + 컨텐츠 사이즈를 더해서 전체 사이즈 구함, 더 정확히는 마지막 페이지이면 서 컨텐츠 사이즈가 페이지 사이즈보다 작을 때)
+    */
+    public Page<OrderDTOByUsingQueryProjection> fetchOrdersWithPagingByFetchResultsWithOptimizeCountQuery(OrderSearch orderSearch, Pageable pageable) {
+        List<OrderDTOByUsingQueryProjection> content = jpaQueryFactory
+                .select(new QOrderDTOByUsingQueryProjection(
+                        member.name, order.status.stringValue())
+                )
+                .from(order)
+                .leftJoin(order.member, member)
+                .where(
+                        orderStatus(orderSearch.getOrderStatus()),
+                        nameContains(orderSearch.getMemberName())
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Order> countQuery = jpaQueryFactory
+                .select(order)
+                .from(order)
+                .leftJoin(order.member, member)
+                .where(
+                        orderStatus(orderSearch.getOrderStatus()),
+                        nameContains(orderSearch.getMemberName())
+                );
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
     }
 
     private static BooleanExpression orderStatus(OrderStatus orderStatus) {
