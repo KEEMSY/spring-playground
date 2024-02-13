@@ -336,7 +336,7 @@ public class OrderQueryDslRepository {
                         member.name, order.status.stringValue())
                 )
                 .from(order)
-                .join(order.member, member)
+                .leftJoin(order.member, member)
                 .where(
                         orderStatus(orderSearch.getOrderStatus()),
                         nameContains(orderSearch.getMemberName())
@@ -349,6 +349,43 @@ public class OrderQueryDslRepository {
         long total = results.getTotal();
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    /*
+    복잡한 페이징, 데이터 내용과 전체 카운트를 별도로 조회한다.
+    - 복잡한 페이징에서 사용한다.
+    - 데이터 조회 쿼리와 전체 카운트 쿼리를 분리한다.
+      페이징 처리를 할 때, 전체 데이터의 수를 알아야 하는데, 이렇게 전체 카운트 쿼리를 별도로 실행하는 것은 쿼리 최적화 측면에서 중요할 수 있다.
+      예를 들어, 데이터 조회 쿼리가 매우 복잡하거나, 많은 양의 데이터를 처리해야 하는 경우, 전체 카운트 쿼리를 별도로 실행하지 않으면
+      성능 저하가 발생할 수 있다. 이런 경우에는 데이터 조회 쿼리와 전체 카운트 쿼리를 분리하여 각각 실행하는 것이 좋다.
+     */
+    public Page<OrderDTOByUsingQueryProjection> fetchOrdersWithPagingByFetchResultsWithComplex(OrderSearch orderSearch, Pageable pageable) {
+        List<OrderDTOByUsingQueryProjection> content = jpaQueryFactory
+                .select(new QOrderDTOByUsingQueryProjection(
+                        member.name, order.status.stringValue())
+                )
+                .from(order)
+                .leftJoin(order.member, member)
+                .where(
+                        orderStatus(orderSearch.getOrderStatus()),
+                        nameContains(orderSearch.getMemberName())
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = jpaQueryFactory
+                .select(order)
+                .from(order)
+                .leftJoin(order.member, member)
+                .where(
+                        orderStatus(orderSearch.getOrderStatus()),
+                        nameContains(orderSearch.getMemberName())
+                )
+                .fetchCount();
+
+        return new PageImpl<>(content, pageable, total);
+
     }
 
     private static BooleanExpression orderStatus(OrderStatus orderStatus) {

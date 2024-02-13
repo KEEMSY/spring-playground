@@ -361,6 +361,53 @@ class OrderAdapterTest {
 
     }
 
+    @Test
+    @DisplayName("Pageable 주문 조회 테스트: 복잡한 페이징")
+    void searchPageComplex() {
+        // given
+        Member member = saveMember("test");
+
+        Album album = new Album();
+        album.setName("Album Title");
+        album.setPrice(20);
+        album.setStockQuantity(50);
+        album.setArtist("Artist Name");
+        album.setEtc("Other Album Details");
+
+        Album album2 = new Album();
+        album2.setName("Album Title2");
+        album2.setPrice(20);
+        album2.setStockQuantity(50);
+        album2.setArtist("Artist Name2");
+        album2.setEtc("Other Album Details2");
+
+        Category category = addCategory(album);
+
+        album.setCategories(new ArrayList<>());
+        album2.setCategories(new ArrayList<>());
+
+        album.getCategories().add(category);
+        album2.getCategories().add(category);
+
+        itemJpaRepository.save(album);
+
+        orderAdapter.order(member.getId(), album.getId(), 1);
+        orderAdapter.order(member.getId(), album.getId(), 1);
+
+        OrderSearch orderSearch = new OrderSearch();
+        orderSearch.setOrderStatus(OrderStatus.ORDER);
+
+        // when
+        Page<OrderDTOByUsingQueryProjection> orders = orderAdapter.searchPageComplex(orderSearch, PageRequest.of(0, 10));
+        List<OrderDTOByUsingQueryProjection> content = orders.getContent();
+        long totalElements = orders.getTotalElements();
+
+        // then
+        assertThat(content.size()).isEqualTo(2);
+        assertThat(totalElements).isEqualTo(2);
+    }
+
+
     @NotNull
     private Member saveMember(String memberName) {
         Member member = new Member();

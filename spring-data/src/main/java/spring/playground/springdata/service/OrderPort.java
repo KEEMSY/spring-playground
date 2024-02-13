@@ -13,4 +13,5 @@ public interface OrderPort {
     void cancelOrder(Long orderId);
     List<Order> findOrders(OrderSearch orderSearch);
     Page<OrderDTOByUsingQueryProjection> searchPageSimple(OrderSearch orderSearch, Pageable pageable);
+    Page<OrderDTOByUsingQueryProjection> searchPageComplex(OrderSearch orderSearch, Pageable pageable);
 }
