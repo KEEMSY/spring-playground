@@ -329,29 +329,31 @@ public class OrderQueryDslRepository {
       - fetchResults() 메서드를 사용하면, 결과를 가져오는 동안에 페이징 처리를 수행한다. 즉, 결과 세트를 여러 페이지로 분할한다.
         그런데 ORDER BY 절을 사용하면, 데이터베이스는 모든 결과를 먼저 정렬하고 나서야 필요한 일부 결과만 반환한다.
         이는 오히려 성능 저하를 일으킬 수 있다.
+    따라서, 페이징 처리를 위해 fetchResults()를 사용하는 경우에는 ORDER BY 절의 사용이 무의미해지는 것이 아니라, 오히려 성능을 최적화하는 데 도움이 될 수 있다.
 
-따라서, 페이징 처리를 위해 fetchResults()를 사용하는 경우에는 ORDER BY 절의 사용이 무의미해지는 것이 아니라, 오히려 성능을 최적화하는 데 도움이 될 수 있습니다.
+    *fetchResults 는 Deprecated 되었고, count 쿼리가 필요하다면 별로도 작성하는 것이 좋다.
+       - 혹은 대안으로 PageableExecutionUtils.getPage() 를 사용하는 것이 좋다.
     */
-    public Page<OrderDTOByUsingQueryProjection> fetchOrdersWithPagingByFetchResults(OrderSearch orderSearch, Pageable pageable) {
-        QueryResults<OrderDTOByUsingQueryProjection> results = jpaQueryFactory
-                .select(new QOrderDTOByUsingQueryProjection(
-                        member.name, order.status.stringValue())
-                )
-                .from(order)
-                .leftJoin(order.member, member)
-                .where(
-                        orderStatus(orderSearch.getOrderStatus()),
-                        nameContains(orderSearch.getMemberName())
-                )
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetchResults();
-
-        List<OrderDTOByUsingQueryProjection> content = results.getResults();
-        long total = results.getTotal();
-
-        return new PageImpl<>(content, pageable, total);
-    }
+//    public Page<OrderDTOByUsingQueryProjection> fetchOrdersWithPagingByFetchResults(OrderSearch orderSearch, Pageable pageable) {
+//        QueryResults<OrderDTOByUsingQueryProjection> results = jpaQueryFactory
+//                .select(new QOrderDTOByUsingQueryProjection(
+//                        member.name, order.status.stringValue())
+//                )
+//                .from(order)
+//                .leftJoin(order.member, member)
+//                .where(
+//                        orderStatus(orderSearch.getOrderStatus()),
+//                        nameContains(orderSearch.getMemberName())
+//                )
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .fetchResults();
+//
+//        List<OrderDTOByUsingQueryProjection> content = results.getResults();
+//        long total = results.getTotal();
+//
+//        return new PageImpl<>(content, pageable, total);
+//    }
 
     /*
     복잡한 페이징, 데이터 내용과 전체 카운트를 별도로 조회한다.
@@ -377,14 +379,14 @@ public class OrderQueryDslRepository {
                 .fetch();
 
         long total = jpaQueryFactory
-                .select(order)
+                .select(order.count())
                 .from(order)
                 .leftJoin(order.member, member)
                 .where(
                         orderStatus(orderSearch.getOrderStatus()),
                         nameContains(orderSearch.getMemberName())
                 )
-                .fetchCount();
+                .fetchOne();
 
         return new PageImpl<>(content, pageable, total);
     }
@@ -410,8 +412,8 @@ public class OrderQueryDslRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        JPAQuery<Order> countQuery = jpaQueryFactory
-                .select(order)
+        JPAQuery<Long> countQuery = jpaQueryFactory
+                .select(order.count())
                 .from(order)
                 .leftJoin(order.member, member)
                 .where(
@@ -419,7 +421,7 @@ public class OrderQueryDslRepository {
                         nameContains(orderSearch.getMemberName())
                 );
 
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
     private static BooleanExpression orderStatus(OrderStatus orderStatus) {

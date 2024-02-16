@@ -12,7 +12,7 @@ public interface OrderPort {
     Long order(Long memberId, Long productId, int count);
     void cancelOrder(Long orderId);
     List<Order> findOrders(OrderSearch orderSearch);
-    Page<OrderDTOByUsingQueryProjection> searchPageSimple(OrderSearch orderSearch, Pageable pageable);
+//    Page<OrderDTOByUsingQueryProjection> searchPageSimple(OrderSearch orderSearch, Pageable pageable); // deprecated 된 방법
     Page<OrderDTOByUsingQueryProjection> searchPageComplex(OrderSearch orderSearch, Pageable pageable);
     Page<OrderDTOByUsingQueryProjection> searchPageWithOptimizeCountQuery(OrderSearch orderSearch, Pageable pageable);
 }

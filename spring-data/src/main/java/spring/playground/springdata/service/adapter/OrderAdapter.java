@@ -66,10 +66,10 @@ public class OrderAdapter implements OrderPort {
         return orderQueryDslRepository.findOrdersWith(orderSearch);
     }
 
-    @Override
-    public Page<OrderDTOByUsingQueryProjection> searchPageSimple(OrderSearch orderSearch, Pageable pageable) {
-        return orderQueryDslRepository.fetchOrdersWithPagingByFetchResults(orderSearch, pageable);
-    }
+//    @Override  // deprecated 된 방법
+//    public Page<OrderDTOByUsingQueryProjection> searchPageSimple(OrderSearch orderSearch, Pageable pageable) {
+//        return orderQueryDslRepository.fetchOrdersWithPagingByFetchResults(orderSearch, pageable);
+//    }
 
     @Override
     public Page<OrderDTOByUsingQueryProjection> searchPageComplex(OrderSearch orderSearch, Pageable pageable) {
