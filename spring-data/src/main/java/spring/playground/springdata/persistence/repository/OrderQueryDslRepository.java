@@ -18,6 +18,7 @@ import spring.playground.springdata.persistence.entity.order.OrderSearch;
 import spring.playground.springdata.persistence.entity.order.OrderStatus;
 
 import java.util.List;
+import java.util.Optional;
 
 import static spring.playground.springdata.persistence.entity.member.QMember.member;
 import static spring.playground.springdata.persistence.entity.order.QOrder.order;
@@ -378,7 +379,7 @@ public class OrderQueryDslRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        long total = jpaQueryFactory
+        Optional<Long> totalResult = Optional.ofNullable(jpaQueryFactory
                 .select(order.count())
                 .from(order)
                 .leftJoin(order.member, member)
@@ -386,7 +387,9 @@ public class OrderQueryDslRepository {
                         orderStatus(orderSearch.getOrderStatus()),
                         nameContains(orderSearch.getMemberName())
                 )
-                .fetchOne();
+                .fetchOne());
+
+        long total = totalResult.orElse(0L);
 
         return new PageImpl<>(content, pageable, total);
     }
