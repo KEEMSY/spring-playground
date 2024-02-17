@@ -16,10 +16,11 @@ public class OrderController {
 
     private final OrderPort orderPort;
 
-    @GetMapping("/v1/orders")
-    public List<OrderDTOByUsingQueryProjection> searchOrdersV1(OrderSearch orderSearch, Pageable pageable) {
-        return orderPort.searchPageSimple(orderSearch, pageable).getContent();
-    }
+    // deprecated 된 방법 이므로 사용하지 않도록 하자.
+//    @GetMapping("/v1/orders")
+//    public List<OrderDTOByUsingQueryProjection> searchOrdersV1(OrderSearch orderSearch, Pageable pageable) {
+//        return orderPort.searchPageSimple(orderSearch, pageable).getContent();
+//    }
 
     @GetMapping("/v2/orders")
     public List<OrderDTOByUsingQueryProjection> searchOrdersV2(OrderSearch orderSearch, Pageable pageable) {

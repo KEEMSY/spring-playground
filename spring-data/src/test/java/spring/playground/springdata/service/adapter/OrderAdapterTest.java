@@ -2,6 +2,7 @@ package spring.playground.springdata.service.adapter;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -316,6 +317,7 @@ class OrderAdapterTest {
 
     @Test
     @DisplayName("Pageable 주문 조회 테스트")
+    @Disabled
     void searchPageSimple() {
         // given
         Member member = saveMember("test");
@@ -351,7 +353,7 @@ class OrderAdapterTest {
         orderSearch.setOrderStatus(OrderStatus.ORDER);
 
         // when
-        Page<OrderDTOByUsingQueryProjection> orders = orderAdapter.searchPageSimple(orderSearch, PageRequest.of(0, 10));
+        Page<OrderDTOByUsingQueryProjection> orders = orderAdapter.searchPageComplex(orderSearch, PageRequest.of(0, 10));
         List<OrderDTOByUsingQueryProjection> content = orders.getContent();
         long totalElements = orders.getTotalElements();
 
