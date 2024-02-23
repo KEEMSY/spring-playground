@@ -9,7 +9,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQL57Dialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect # deprecated
     open-in-view: false
     #    show-sql: true # 로그성임으로 false로 두고 logging 설정에서 따로 설정하는 것이 좋다.
 
