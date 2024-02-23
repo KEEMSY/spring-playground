@@ -1,0 +1,66 @@
+server:
+  port: 9090
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/testDB?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: test
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL57Dialect
+    open-in-view: false
+    #    show-sql: true # 로그성임으로 false로 두고 logging 설정에서 따로 설정하는 것이 좋다.
+
+    properties:
+      hibernate:
+        format_sql: true
+        ddl-auto: create
+        default_batch_fetch_size: 1000 #최적화 옵션, 이 옵션은 왠만해서는 켜두는 것이 좋다. | In query 의 개수를 지정하는 옵션
+
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+    mongodb:
+      host: localhost
+      port: 27017
+      authentication-database: admin
+      database: MY-DATABASES
+      username: sykeem
+      password: 1234
+
+springdoc:
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  paths-to-match: /**
+
+  api-docs:
+    enabled: true # 사용 여부 설정. default: true
+    path: /api-docs
+  swagger-ui:
+    path: / # 스웨거 접속 path 설정
+    disable-swagger-default-url: true # swagger-default-url 인 petstore html 문서 비활성화 여부
+    display-request-duration: true # 스웨거에서 try it out 했을 시 request duration(요청 소요 시간) 표기
+    tags-sorter: alpha # 태그 정렬 기준
+    operations-sorter: alpha # 태그 내 각 api 의 정렬 기준
+    doc-expansion: none # tag와 operation을 펼치는 방식 설정
+    syntax-highlight: # 구문 강조 표시 활성화
+      theme: nord # 구문 색상 변경
+    urls-primary-name: TEST API # 스웨거 ui 로드 때 표기되는 스웨거 그룹의 이름 표기
+    persist-authorization: true # true 로 설정하면 권한 부여 데이터가 유지되고 브라우저 닫기/새로 고침에서 손실되지 않음.
+    query-config-enabled: true # 현재 설정되어있는 config 들을 적용시키고, 초기 접근 시 셋팅 및 재정의 가능.
+
+  pre-loading-enabled: true # 프로그램 시작 시 Open API 을 불러오기 위한 사전 셋팅
+
+
+logging.level:
+  org:
+    hibernate:
+      SQL: debug
