@@ -21,8 +21,8 @@ import static jakarta.persistence.FetchType.LAZY;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
 
-    @Id @GeneratedValue
-    @Column(name = "order_id")
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(name = "order_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
