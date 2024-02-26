@@ -16,8 +16,8 @@ import static jakarta.persistence.FetchType.LAZY;
 public class OrderItem {
 
     @Id
-    @GeneratedValue
-    @Column(name = "order_item_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(name = "order_item_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)

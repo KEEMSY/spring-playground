@@ -16,8 +16,8 @@ import java.util.List;
 public abstract class Item {
 
     @Id
-    @GeneratedValue
-    @Column(name = "item_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(name = "item_id")
     private Long id;
 
     private String name;
