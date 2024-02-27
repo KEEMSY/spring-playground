@@ -5,7 +5,6 @@ import com.example.springskeleton.domain.order.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class OrderPersistenceAdapter implements OrderRepository {
@@ -16,8 +15,8 @@ public class OrderPersistenceAdapter implements OrderRepository {
     }
 
     @Override
-    public Optional<Order> findById(Long orderId) {
-        return Optional.empty();
+    public Order findById(Long orderId) {
+        return orderJpaRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("주문이 존재하지 않습니다."));
     }
 
     @Override
