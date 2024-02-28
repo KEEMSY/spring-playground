@@ -1,4 +1,4 @@
-package com.example.springskeleton.adapter.persistence;
+package com.example.springskeleton.adapter.order.persistence;
 
 import com.example.springskeleton.application.ports.OrderRepository;
 import com.example.springskeleton.domain.order.Order;

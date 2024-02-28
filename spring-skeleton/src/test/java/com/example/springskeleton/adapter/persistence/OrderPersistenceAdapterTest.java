@@ -1,6 +1,8 @@
 package com.example.springskeleton.adapter.persistence;
 
 import com.example.springskeleton.DatabaseCleanUp;
+import com.example.springskeleton.adapter.order.persistence.OrderJpaRepository;
+import com.example.springskeleton.adapter.order.persistence.OrderPersistenceAdapter;
 import com.example.springskeleton.domain.common.Address;
 import com.example.springskeleton.domain.common.Category;
 import com.example.springskeleton.domain.common.Delivery;

@@ -1,7 +1,7 @@
 package com.example.springskeleton.steps;
 
-import com.example.springskeleton.adapter.persistence.ItemJpaRepository;
-import com.example.springskeleton.adapter.persistence.MemberJpaRepository;
+import com.example.springskeleton.adapter.order.persistence.ItemJpaRepository;
+import com.example.springskeleton.adapter.member.persistence.MemberJpaRepository;
 import com.example.springskeleton.domain.common.Address;
 import com.example.springskeleton.domain.common.Category;
 import com.example.springskeleton.domain.common.Delivery;

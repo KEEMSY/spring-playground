@@ -1,4 +1,4 @@
-package com.example.springskeleton.dto;
+package com.example.springskeleton.dto.order;
 
 import com.example.springskeleton.domain.common.Address;
 import com.example.springskeleton.domain.order.Order;

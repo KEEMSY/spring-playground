@@ -1,4 +1,4 @@
-package com.example.springskeleton.dto;
+package com.example.springskeleton.dto.order;
 
 import com.example.springskeleton.domain.order.OrderItem;
 import lombok.Data;

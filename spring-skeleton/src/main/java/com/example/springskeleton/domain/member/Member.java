@@ -1,7 +1,7 @@
 package com.example.springskeleton.domain.member;
 
-import com.example.springskeleton.domain.order.Order;
 import com.example.springskeleton.domain.common.Address;
+import com.example.springskeleton.domain.order.Order;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;

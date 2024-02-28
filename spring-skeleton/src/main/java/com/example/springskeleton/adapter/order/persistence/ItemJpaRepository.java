@@ -1,4 +1,4 @@
-package com.example.springskeleton.adapter.persistence;
+package com.example.springskeleton.adapter.order.persistence;
 
 import com.example.springskeleton.domain.item.Item;
 import org.springframework.data.jpa.repository.JpaRepository;

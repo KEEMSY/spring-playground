@@ -1,8 +1,8 @@
-package com.example.springskeleton.adapter.api;
+package com.example.springskeleton.adapter.order.api;
 
 import com.example.springskeleton.application.OrderService;
 import com.example.springskeleton.domain.order.Order;
-import com.example.springskeleton.dto.OrderDto;
+import com.example.springskeleton.dto.order.OrderDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
