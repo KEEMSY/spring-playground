@@ -44,8 +44,8 @@ public class MemberPersistenceAdapter implements MemberRepository {
     }
 
     @Override
-    public void updateMember(Member member) {
-
+    public Member updateMember(Long id, Member member) {
+        return null;
     }
 
     @Override

@@ -80,23 +80,4 @@ class MemberPersistenceAdapterTest {
                 .hasMessageContaining("이미 존재하는 이메일입니다.");
     }
 
-//    @Test
-//    @DisplayName("유저 이름 변경 테스트")
-//    void updateUser() {
-//        // given
-//        Address address = memberStep.createAddress();
-//        Set<Role> roles = Set.of(Role.USER);
-//
-//        Member member = memberStep.createMemberEntity(address, roles);
-//        long createdMemberId = memberPersistenceAdapter.save(member);
-//
-//        // when
-//        String changedName = "changedUser";
-//        memberPersistenceAdapter.updateMember(createdMemberId, changedName);
-//
-//        // then
-//        Member foundMember = memberJpaRepository.findById(createdMemberId).orElseThrow();
-//        assertThat(foundMember.getName()).isEqualTo(changedName);
-//    }
-
 }
