@@ -9,10 +9,12 @@ import com.example.springskeleton.domain.common.DeliveryStatus;
 import com.example.springskeleton.domain.item.Album;
 import com.example.springskeleton.domain.item.Item;
 import com.example.springskeleton.domain.member.Member;
+import com.example.springskeleton.domain.member.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 @Component
 public class OrderSteps {
@@ -61,7 +63,10 @@ public class OrderSteps {
     public Member createMember(Address address) {
         Member member = new Member();
         member.setName("memberName");
+        member.setEmail("Test@email.com");
+        member.setPassword("securePassword");
         member.setAddress(address);
+        member.setRoles(Set.of(Role.USER));
 
         memberJpaRepository.save(member);
         return member;
