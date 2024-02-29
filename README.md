@@ -1,81 +1,29 @@
 # Spring Playground
 
+| module name     | description                                         |
+|:----------------|-----------------------------------------------------|
+| Spring-Data     | spring-boot-starter-data와 관련된 라이브러리를 종합한 프로젝트       |
+| Spring-skeleton | Spring-boot 사용 간, 필요한 기본 설정과 사용 예시를 확인하는데 사용되는 프로젝트 |
 
-## Core Spring Concepts
+## 공통 작성 규칙
 
-- [ ] Spring Testing
-  - Unit testing with JUnit
-  - Integration testing with Spring TestContext Framework
-  - Mocking with Mockito
-- [ ] Spring Data
-  - JPA and Hibernate integration 
-  - Spring Data Repositories 
-  - Query methods and custom queries
-- [ ] Spring Data REST
-  - Building RESTful APIs with Spring Data REST 
-  - Customizing endpoints and behavior
-- [ ] Spring Security
-  - Authentication and Authorization 
-  - Customizing Security Configurations 
-  - OAuth 2.0 and OpenID Connect
+| rule name           | description                                                                    |
+|:--------------------|--------------------------------------------------------------------------------|
+| Java Version        | Java JDK 17                                                                    |
+| Unit testing        | Junit5, Mockito 를 활용한 단위 테스트 작성한다.                                             |
+| Integration testing | 외부 컴포넌트 사용 시, dockerfile(혹은 docker-compose), TestContainers 를 활용한 통합 테스트 작성한다. |
+| Controller 작성       | 실제 구동 및 테스트 진행을 위한 APIController 기본 구현, 기본 데이터 형식(JSON) 작성한다.                  |
+| Logging             | 개발 간 로깅 작성한다.                                                                  |
 
-- [ ] Spring AOP
-  - Aspect-Oriented Programming concepts 
-  - Creating and using Aspects 
-  - AOP in Spring
-  
-## Spring Framework Extensions
+--- 
 
-- [ ] Spring Cloud
-  - Microservices architecture
-  - Service discovery with Eureka
-  - API Gateway with Zuul
-- [ ] Spring Batch
-  - Batch processing concepts
-  - Writing batch jobs with Spring Batch
-  - Job scheduling and execution
+## Spring-Data
 
-> Web Development with Spring
+- JPA 를 활용한, 엔터티 설계 및 사용방법을 연습하기 위한 프로젝트
+- JPA, QueryDSL, JDBC, MongoDB, Redis 등 다양한 데이터베이스 연동 연습
 
-- [ ] Spring MVC
-  - Model-View-Controller architecture
-  - Request mapping and handling
-  - Thymeleaf templates
-- [ ] Spring WebFlux
-  - Reactive programming with Spring 
-  - WebFlux controllers and endpoints 
-  - Reactive Streams
-- [ ] Spring Profiles
-  - Environment-specific configuration 
-  - Profile-specific beans and properties
+---
 
-> Spring Boot Features
+## Spring-skeleton
 
-- [ ] Spring Boot Actuator
-  - Monitoring and managing Spring Boot applications 
-  - Customizing and extending Actuator endpoints
-- [ ] Spring Boot DevTools
-  - Automatic application restart 
-  - Remote debugging with DevTools
-- [ ] Spring Boot Security
-  - Securing a Spring Boot application 
-  - Customizing security features
-  - JWT (JSON Web Token) authentication
-- [ ] Spring Boot External Configuration
-  - Externalizing configuration properties 
-  - YAML vs. Properties files 
-  - Using environment variables
-
-## Spring Boot Project Practices
-
-- [ ] Spring Boot Starter Projects
-  - Understanding and creating starter projects 
-  - Benefits and best practices
-- [ ] Spring Boot Logging
-  - Types of logging (Logback, Log4j, SLF4J)
-  - Configuring logging in Spring Boot
-  - Best practices for logging
-- [ ] Spring Boot Project Practices
-  - Structuring a Spring Boot project 
-  - Packaging and deploying a Spring Boot application 
-  - Continuous integration and deployment strategies
+- Spring-boot 사용 간, 필요한 기본 설정과 사용 예시를 확인하는데 사용되는 프로젝트
