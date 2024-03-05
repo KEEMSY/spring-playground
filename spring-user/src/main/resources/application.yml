@@ -3,13 +3,15 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/testDB?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/auth?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
     password: test
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQL8Dialect # deprecated
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
     open-in-view: false
     #    show-sql: true # 로그성임으로 false로 두고 logging 설정에서 따로 설정하는 것이 좋다.
 
@@ -17,6 +19,7 @@ spring:
       hibernate:
         format_sql: true
         ddl-auto: create
+        highlight_sql: true
         default_batch_fetch_size: 1000 #최적화 옵션, 이 옵션은 왠만해서는 켜두는 것이 좋다. | In query 의 개수를 지정하는 옵션
 
 
@@ -38,7 +41,7 @@ springdoc:
     enabled: true # 사용 여부 설정. default: true
     path: /api-docs
   swagger-ui:
-    path: / # 스웨거 접속 path 설정
+    path: /swagger # 스웨거 접속 path 설정
     disable-swagger-default-url: true # swagger-default-url 인 petstore html 문서 비활성화 여부
     display-request-duration: true # 스웨거에서 try it out 했을 시 request duration(요청 소요 시간) 표기
     tags-sorter: alpha # 태그 정렬 기준
