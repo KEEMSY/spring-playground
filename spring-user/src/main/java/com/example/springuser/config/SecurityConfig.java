@@ -1,17 +1,52 @@
 package com.example.springuser.config;
 
-import org.springframework.boot.autoconfigure.security.reactive.PathRequest;
+import com.example.springuser.filter.JwtAuthenticationFilter;
+import com.example.springuser.filter.JwtAuthorizationFilter;
+import com.example.springuser.jwt.JwtUtil;
+import com.example.springuser.security.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity // Spring Security 지원을 가능하게 함
 public class SecurityConfig {
+
+    private final JwtUtil jwtUtil;
+    private final AuthenticationConfiguration authenticationConfiguration;
+    private final UserDetailsServiceImpl userDetailsService;
+
+    public SecurityConfig(JwtUtil jwtUtil,
+                          AuthenticationConfiguration authenticationConfiguration,
+                          UserDetailsServiceImpl userDetailsService) {
+        this.jwtUtil = jwtUtil;
+        this.authenticationConfiguration = authenticationConfiguration;
+        this.userDetailsService = userDetailsService;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
+        filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
+        return filter;
+    }
+
+    @Bean
+    public JwtAuthorizationFilter jwtAuthorizationFilter() {
+        return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -37,6 +72,11 @@ public class SecurityConfig {
                         .failureUrl("/api/user/login-page?error")
                         .permitAll()
         );
+
+        // filter 추가
+        http.addFilterBefore(jwtAuthenticationFilter(), JwtAuthenticationFilter.class);
+        //  UsernamePasswordAuthenticationFilter 수행 전에, jwtAuthorizationFilter 수행 (인가 -> 로그인 진행이 올바른 순서이기 때문)
+        http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
