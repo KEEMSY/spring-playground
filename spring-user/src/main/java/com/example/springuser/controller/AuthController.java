@@ -1,16 +1,13 @@
 package com.example.springuser.controller;
 
-import com.example.springuser.entity.User;
 import com.example.springuser.entity.UserRole;
 import com.example.springuser.jwt.JwtUtil;
-import com.example.springuser.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -121,12 +118,5 @@ public class AuthController {
         return "getSession : " + value;
     }
 
-    @GetMapping("/test")
-    public String getAuthentication(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        // Authentication 의 Principal 에 저장된 UserDetailsImpl 을 가져옴
-        User user =  userDetails.getUser();
-        System.out.println("user.getUsername() = " + user.getUsername());
 
-        return "redirect:/";
-    }
 }

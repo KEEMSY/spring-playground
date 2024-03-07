@@ -8,6 +8,14 @@ spring:
     password: test
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  devtools:
+    livereload:
+      enabled: true
+
+  thymeleaf:
+    cache: false
+    suffix: .html
+
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:

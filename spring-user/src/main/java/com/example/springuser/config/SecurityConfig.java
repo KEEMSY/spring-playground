@@ -4,10 +4,12 @@ import com.example.springuser.filter.JwtAuthenticationFilter;
 import com.example.springuser.filter.JwtAuthorizationFilter;
 import com.example.springuser.jwt.JwtUtil;
 import com.example.springuser.security.UserDetailsServiceImpl;
+// import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -18,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity // Spring Security 지원을 가능하게 함
+@EnableMethodSecurity(securedEnabled = true) // secured 어노테이션 활성화
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
@@ -62,6 +65,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
+//                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정, 정적 리소스의 경우, 필터를 거치는 것이 더 손해이기 때문에, 필터를 거치지 않도록 설정
                         .requestMatchers("/api/user/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
@@ -84,6 +88,13 @@ public class SecurityConfig {
         http.addFilterBefore(jwtAuthenticationFilter(), JwtAuthenticationFilter.class);
         //  UsernamePasswordAuthenticationFilter 수행 전에, jwtAuthorizationFilter 수행 (인가 -> 로그인 진행이 올바른 순서이기 때문)
         http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        // 접근 불가 페이지
+        http.exceptionHandling((exceptionHandling) ->
+                exceptionHandling
+                        // "접근 불가" 페이지 URL 설정
+                        .accessDeniedPage("/access-denied")
+        );
 
         return http.build();
     }
