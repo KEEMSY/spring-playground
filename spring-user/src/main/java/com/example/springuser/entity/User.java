@@ -27,6 +27,8 @@ public class User {
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserRole role;
+    
+    private Long kakaoId;
 
     public User(String username, String password, String email, UserRole role) {
         this.username = username;
@@ -34,5 +36,18 @@ public class User {
         this.email = email;
         this.role = role;
 
+    }
+
+    public User(String username, String password, String email, UserRole role, Long kakaoId) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.kakaoId =kakaoId;
+    }
+
+    public User kakaoIdUpdate(Long kakaoId) {
+        this.kakaoId = kakaoId;
+        return this;
     }
 }
