@@ -1,8 +1,11 @@
 package com.example.springuser.controller.user;
 
-import com.example.springuser.dto.LoginRequest;
 import com.example.springuser.dto.SignupRequest;
+import com.example.springuser.jwt.JwtUtil;
+import com.example.springuser.service.KakaoService;
 import com.example.springuser.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +15,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -21,9 +25,11 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final KakaoService kakaoService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, KakaoService kakaoService) {
         this.userService = userService;
+        this.kakaoService = kakaoService;
     }
 
     @GetMapping("/user/login-page")
@@ -49,5 +55,17 @@ public class UserController {
 
         userService.signup(request);
         return "redirect:/api/user/login-page";
+    }
+
+    @GetMapping("/user/kakao/callback")
+    public String kakaoCallback(@RequestParam String code, HttpServletResponse res) throws JsonProcessingException {
+        log.info("code = {}", code);
+        String token = kakaoService.kakaoLogin(code);
+
+        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, token);
+        cookie.setPath("/");
+        res.addCookie(cookie);
+
+        return "redirect:/";
     }
 }
