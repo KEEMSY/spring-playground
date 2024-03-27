@@ -1,7 +1,10 @@
 package com.example.springuser.controller.user;
 
 import com.example.springuser.dto.SignupRequest;
+import com.example.springuser.dto.UserInfoDto;
+import com.example.springuser.entity.UserRole;
 import com.example.springuser.jwt.JwtUtil;
+import com.example.springuser.security.UserDetailsImpl;
 import com.example.springuser.service.KakaoService;
 import com.example.springuser.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -9,13 +12,11 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -55,6 +56,17 @@ public class UserController {
 
         userService.signup(request);
         return "redirect:/api/user/login-page";
+    }
+
+    // 회원 관련 정보 받기
+    @GetMapping("/user-info")
+    @ResponseBody
+    public UserInfoDto getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        String username = userDetails.getUser().getUsername();
+        UserRole role = userDetails.getUser().getRole();
+        boolean isAdmin = (role == UserRole.ADMIN);
+
+        return new UserInfoDto(username, isAdmin);
     }
 
     @GetMapping("/user/kakao/callback")

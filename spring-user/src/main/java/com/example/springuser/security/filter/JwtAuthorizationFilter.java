@@ -1,4 +1,4 @@
-package com.example.springuser.filter;
+package com.example.springuser.security.filter;
 import com.example.springuser.jwt.JwtUtil;
 import com.example.springuser.security.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
@@ -30,13 +30,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
-
-        String tokenValue = jwtUtil.getTokenFromRequest(req);
-
+        String tokenValue = jwtUtil.getJwtFromHeader(req);
         if (StringUtils.hasText(tokenValue)) {
-            // JWT 토큰 substring
-            tokenValue = jwtUtil.substringToken(tokenValue);
-            log.info(tokenValue);
 
             if (!jwtUtil.validateToken(tokenValue)) {
                 log.error("Token Error");

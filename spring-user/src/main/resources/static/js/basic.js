@@ -1,16 +1,35 @@
-let host = 'http://' + window.location.host;
-
+const host = 'http://' + window.location.host;
+const BEARER_PREFIX = "Bearer ";
 $(document).ready(function () {
     const auth = getToken();
-    if(auth === '') {
-        // window.location.href = host + "/api/user/login-page";
-        $('#login-true').show();
-        $('#login-false').hide();
+
+    if (auth !== undefined && auth !== '') {
+        $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
+            jqXHR.setRequestHeader('Authorization', BEARER_PREFIX  + auth);
+        });
     } else {
-        $('#login-true').show();
-        $('#login-false').hide();
+        window.location.href = host + '/api/user/login-page';
+        return;
     }
-})
+    $.ajax({
+        type: 'GET',
+        url: `/api/user-info`,
+        contentType: 'application/json',
+    }).done(function(data, textStatus, jqXHR, ) {
+        const username = data.username;
+        const isAdmin = !!data.admin;
+
+        if (!username) {
+            window.location.href = '/api/user/login-page';
+            return;
+        }
+        $('#username').text(username);
+
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        logout();
+    });
+
+});
 
 function logout() {
     // 토큰 삭제
@@ -19,16 +38,10 @@ function logout() {
 }
 
 function getToken() {
-
     let auth = Cookies.get('Authorization');
 
-    if(auth === undefined) {
+    if (auth === undefined) {
         return '';
-    }
-
-    // kakao 로그인 사용한 경우 Bearer 추가
-    if(auth.indexOf('Bearer') === -1 && auth !== ''){
-        auth = 'Bearer ' + auth;
     }
 
     return auth;

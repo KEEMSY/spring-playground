@@ -1,4 +1,4 @@
-package com.example.springuser.filter;
+package com.example.springuser.security.filter;
 
 import org.springframework.stereotype.Component;
 import jakarta.servlet.*;
@@ -8,6 +8,7 @@ import org.springframework.core.annotation.Order;
 
 import java.io.IOException;
 
+// filter example
 @Slf4j(topic = "LoggingFilter")
 //@Component
 @Order(1)

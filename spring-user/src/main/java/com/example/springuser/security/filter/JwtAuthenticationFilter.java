@@ -1,4 +1,4 @@
-package com.example.springuser.filter;
+package com.example.springuser.security.filter;
 
 import com.example.springuser.dto.LoginRequest;
 import com.example.springuser.entity.UserRole;
@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         UserRole role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
 
         String token = jwtUtil.createToken(username, role);
-        jwtUtil.addJwtToCookie(token, response);
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
     }
 
     @Override

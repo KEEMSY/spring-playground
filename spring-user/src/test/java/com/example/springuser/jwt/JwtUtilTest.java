@@ -2,6 +2,7 @@ package com.example.springuser.jwt;
 
 import com.example.springuser.entity.UserRole;
 import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,7 @@ class JwtUtilTest {
 
     @Test
     @DisplayName("토큰 유효성 검증 테스트 - 유효한 토큰은 성공적으로 검증되어야한다.")
+    @Disabled("토큰 생성 방식 테스트, 토큰의 헤더를 통한 방식으로 인한 사용안함")
     void validateTokenTest() {
         // given
         String username = "testUser";

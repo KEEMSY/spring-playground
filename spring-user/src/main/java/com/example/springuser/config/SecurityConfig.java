@@ -1,7 +1,7 @@
 package com.example.springuser.config;
 
-import com.example.springuser.filter.JwtAuthenticationFilter;
-import com.example.springuser.filter.JwtAuthorizationFilter;
+import com.example.springuser.security.filter.JwtAuthenticationFilter;
+import com.example.springuser.security.filter.JwtAuthorizationFilter;
 import com.example.springuser.jwt.JwtUtil;
 import com.example.springuser.security.UserDetailsServiceImpl;
 // import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -66,6 +66,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
 //                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정, 정적 리소스의 경우, 필터를 거치는 것이 더 손해이기 때문에, 필터를 거치지 않도록 설정
+                        .requestMatchers("/").permitAll()
                         .requestMatchers("/api/user/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
@@ -85,9 +86,9 @@ public class SecurityConfig {
         );
 
         // filter 추가
-        http.addFilterBefore(jwtAuthenticationFilter(), JwtAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class); // 인가
         //  UsernamePasswordAuthenticationFilter 수행 전에, jwtAuthorizationFilter 수행 (인가 -> 로그인 진행이 올바른 순서이기 때문)
-        http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // 인증
 
         // 접근 불가 페이지
         http.exceptionHandling((exceptionHandling) ->
