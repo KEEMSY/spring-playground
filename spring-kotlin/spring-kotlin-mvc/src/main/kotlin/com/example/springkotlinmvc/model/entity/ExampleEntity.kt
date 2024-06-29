@@ -8,7 +8,14 @@ import jakarta.persistence.Id
 @Entity
 data class ExampleEntity (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
-    val title: String,
-    val description: String
-)
+    val id: Long? = null,
+    var title: String,
+    var description: String
+) {
+    fun updateTitle(title: String) {
+        this.title = title
+    }
+    fun updateDescription(description: String) {
+        this.description = description
+    }
+}
