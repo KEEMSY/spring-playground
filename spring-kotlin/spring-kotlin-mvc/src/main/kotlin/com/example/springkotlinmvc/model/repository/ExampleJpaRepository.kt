@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ExampleJpaRepository: JpaRepository<ExampleEntity, Long> {
+    fun findByTitleContaining(title: String): List<ExampleEntity>
 }
