@@ -1,0 +1,30 @@
+server:
+  port: 1111
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    open-in-view: false
+
+    properties:
+      hibernate:
+        format_sql: true
+        ddl-auto: create-drop
+        default_batch_fetch_size: 1000 #최적화 옵션, 이 옵션은 왠만해서는 켜두는 것이 좋다. | In query 의 개수를 지정하는 옵션(Collection 의 Lazy Loading 에서 활용)
+
+  data:
+    redis:
+      host: localhost
+      port: 16379
+
+
+logging.level:
+  org:
+    hibernate:
+      SQL: debug
