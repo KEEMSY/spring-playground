@@ -1,16 +1,17 @@
 package com.example.springkotlinmvc.model.entity
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
+import jakarta.persistence.*
 
 @Entity
 data class ExampleEntity (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
     var title: String,
-    var description: String
+    var description: String,
+
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    var exampleGroup: ExampleGroupOneToMany? = null
 ) {
     fun updateTitle(title: String) {
         this.title = title
