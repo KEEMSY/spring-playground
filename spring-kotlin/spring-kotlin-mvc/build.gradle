@@ -4,6 +4,7 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.jpa' version '1.9.24'
     id 'org.jetbrains.kotlin.jvm' version '1.9.24'
     id 'org.jetbrains.kotlin.plugin.spring' version '1.9.24'
+    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'  // QueryDSL 플러그인 추가
 }
 
 group = 'com.example'
@@ -37,6 +38,9 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql'  // PostgreSQL 드라이버 추가
     annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jpa'  // QueryDSL annotation processor
+    implementation 'com.querydsl:querydsl-jpa:5.0.0'
+    implementation 'com.querydsl:querydsl-kotlin:5.0.0'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -44,10 +48,24 @@ dependencies {
 
 kotlin {
     compilerOptions {
-        freeCompilerArgs.addAll '-Xjsr305=strict'
+        freeCompilerArgs.add('-Xjsr305=strict')
     }
 }
 
-tasks.named('test') {
+tasks.withType(Test) {
     useJUnitPlatform()
+}
+
+// QueryDSL 플러그인 설정
+querydsl {
+    jpa = true
+    querydslSourcesDir = "src/main/generated"
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs("src/main/java", "src/main/generated")
+        }
+    }
 }
