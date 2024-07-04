@@ -1,0 +1,55 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:15432/local_postgres_db?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: dev
+    password: dev
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+
+    properties:
+      hibernate:
+        format_sql: true
+        ddl-auto: create
+        default_batch_fetch_size: 1000 #최적화 옵션, 이 옵션은 왠만해서는 켜두는 것이 좋다. | In query 의 개수를 지정하는 옵션
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  data:
+    redis:
+      host: localhost
+      port: 16379
+
+springdoc:
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  paths-to-match: /**
+
+  api-docs:
+    enabled: true
+    path: /api-docs
+
+  swagger-ui:
+    path: /
+    disable-swagger-default-url: true
+    display-request-duration: true
+    tags-sorter: alpha
+    operations-sorter: alpha
+    doc-expansion: none
+    syntax-highlight:
+      theme: nord
+    urls-primary-name: TEST API
+    persist-authorization: true
+    query-config-enabled: true
+
+  pre-loading-enabled: true
+
+logging.level:
+  org.hibernate.SQL: debug
