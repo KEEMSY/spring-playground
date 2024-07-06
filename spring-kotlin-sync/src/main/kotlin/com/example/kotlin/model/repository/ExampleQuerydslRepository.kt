@@ -2,6 +2,7 @@ package com.example.kotlin.model.repository
 
 import com.example.kotlin.model.entity.ExampleEntity
 import com.example.kotlin.model.entity.QExampleEntity.exampleEntity
+import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Component
 
@@ -14,4 +15,23 @@ class ExampleQuerydslRepository(
             .selectFrom(exampleEntity)
             .fetch()
     }
+
+    fun readExampleById(id: Long): ExampleEntity? {
+        return queryFactory
+            .selectFrom(exampleEntity)
+            .where(exampleEntity.id.eq(id))
+            .fetchOne()
+    }
+
+    fun readExampleBy(name: String): ExampleEntity? {
+        return queryFactory
+            .selectFrom(exampleEntity)
+            .where(nameContains(name))
+            .fetchOne()
+    }
+
+    fun nameContains(exampleName: String?): BooleanExpression? {
+        return exampleName?.let { exampleEntity.title.eq(it) }
+    }
+
 }
