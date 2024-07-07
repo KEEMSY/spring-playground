@@ -24,14 +24,14 @@ class ExampleQuerydslRepository(
             .fetchOne()
     }
 
-    fun readExampleBy(exampleEntitySearch: ExampleEntitySearch): ExampleEntity? {
+    fun readExampleBy(exampleEntitySearch: ExampleEntitySearch): List<ExampleEntity> {
         return queryFactory
             .selectFrom(exampleEntity)
             .where(
                 titleContains(exampleEntitySearch.exampleTitle),
                 descriptionContains(exampleEntitySearch.exampleDescription)
             )
-            .fetchOne()
+            .fetch()
     }
 
     private fun descriptionContains(exampleDescription: String?): BooleanExpression? {
