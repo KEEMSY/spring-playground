@@ -2,11 +2,12 @@ package com.example.kotlin.model.repository
 
 import com.example.kotlin.dto.ExampleGroupOneToManySearch
 import com.example.kotlin.model.entity.ExampleGroupOneToMany
+import com.example.kotlin.model.entity.QExampleEntity.exampleEntity
 import com.example.kotlin.model.entity.QExampleGroupOneToMany.exampleGroupOneToMany
 import com.querydsl.core.types.dsl.BooleanExpression
+import com.querydsl.jpa.JPAExpressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 
 @Component
 class ExampleGroupQuerydslRepository(
@@ -36,13 +37,18 @@ class ExampleGroupQuerydslRepository(
     }
 
     private fun exampleTitleContains(exampleTitle: String?): BooleanExpression {
-        return exampleTitle?.let { exampleGroupOneToMany.examples.any().title.eq(it) }
-            ?: exampleGroupOneToMany.examples.any().title.isNotNull
+        return exampleTitle?.let {
+            JPAExpressions.selectFrom(exampleEntity)
+                .where(
+                    exampleEntity.title.eq(it)
+                    .and(exampleEntity.exampleGroup.id.eq(exampleGroupOneToMany.id))
+                )
+                .exists()
+        } ?: exampleGroupOneToMany.isNotNull
     }
 
     private fun nameContains(exampleGroupTitle: String?): BooleanExpression {
         return exampleGroupTitle?.let { exampleGroupOneToMany.name.eq(it) } ?: exampleGroupOneToMany.name.isNotNull
     }
-
 
 }

@@ -9,7 +9,7 @@ data class ExampleEntity (
     var title: String,
     var description: String,
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
     var exampleGroup: ExampleGroupOneToMany? = null
 ) {
@@ -18,5 +18,9 @@ data class ExampleEntity (
     }
     fun updateDescription(description: String) {
         this.description = description
+    }
+
+    override fun toString(): String {
+        return "ExampleEntity(id=$id, title='$title', description='$description')"
     }
 }
