@@ -1,5 +1,6 @@
 package com.example.kotlin.model.entity
 
+import com.example.kotlin.business.domain.Example
 import jakarta.persistence.*
 
 @Entity
@@ -22,5 +23,12 @@ data class ExampleEntity (
 
     override fun toString(): String {
         return "ExampleEntity(id=$id, title='$title', description='$description')"
+    }
+
+    fun toDomain(): Example {
+        return Example(
+            title = title,
+            description = description
+        )
     }
 }
