@@ -31,7 +31,7 @@ public class MemberApiController {
 
     @GetMapping("api/v1/member")
     public Member getMember(@RequestParam("memberId") Long memberId) throws MemberException {
-        return memberService.getMember(memberId);
+        return memberService.findMember(memberId);
     }
 
     @PostMapping("api/v1/member")

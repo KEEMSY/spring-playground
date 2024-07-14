@@ -33,7 +33,7 @@ public class MemberService {
     }
 
     public void updateMember(Member member) {
-        memberRepository.updateMember(member);
+        memberRepository.updateMember(member.getId(), member);
     }
 
     public void deleteMember(Long memberId) {
