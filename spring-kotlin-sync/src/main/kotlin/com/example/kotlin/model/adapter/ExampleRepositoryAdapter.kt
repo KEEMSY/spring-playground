@@ -2,7 +2,9 @@ package com.example.kotlin.model.adapter
 
 import com.example.kotlin.business.domain.Example
 import com.example.kotlin.business.port.repository.ExampleRepository
+import com.example.kotlin.dto.ExampleEntitySearch
 import com.example.kotlin.model.exception.ExampleCreationException
+import com.example.kotlin.model.exception.ExampleSearchException
 import com.example.kotlin.model.repository.ExampleJpaRepository
 import com.example.kotlin.model.repository.ExampleQuerydslRepository
 import org.springframework.stereotype.Component
@@ -25,8 +27,14 @@ class ExampleRepositoryAdapter (
         }
     }
 
-    override fun getByTitleContaining(title: String): List<Example> {
-        TODO("Not yet implemented")
+    override fun getByCriteria(exampleEntitySearch: ExampleEntitySearch): List<Example> {
+        return try {
+            val entityList = exampleQuerydslRepository.readExampleBy(exampleEntitySearch)
+            val exampleList = entityList.map { it.toDomain() }
+            exampleList
+        } catch (e: Exception) {
+            throw ExampleSearchException("조회 과정에서 알수 없는 에러가 발생 했습니다.", e)
+        }
     }
 
     override fun getById(id: Long): Example? {

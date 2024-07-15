@@ -1,6 +1,7 @@
 package com.example.kotlin.model.adapter
 
 import com.example.kotlin.business.domain.Example
+import com.example.kotlin.dto.ExampleEntitySearch
 import com.example.kotlin.model.entity.ExampleEntity
 import com.example.kotlin.model.exception.ExampleCreationException
 import com.example.kotlin.model.repository.ExampleJpaRepository
@@ -36,6 +37,7 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         assertEquals(inputExample.title, expectedExample.title)
         assertEquals(inputExample.description, expectedExample.description)
     }
+
     @Test
     fun `Example 생성 실패 테스트 - title이 null일 경우 ExampleCreationException이 발생한다-변환에서 에러 발생`() {
         // given
@@ -49,6 +51,22 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         }
 
         assertEquals("Example을 생성하는데 실패 했습니다.", exception.message)
+    }
+
+    @Test
+    fun `Example 조회 테스트 - 검색 Title을 포함하는 데이터를 조회한다`() {
+        // given
+        val exampleEntity = ExampleEntity(title = "title", description = "description")
+        exampleJpaRepository.save(exampleEntity)
+        val exampleEntitySearch = ExampleEntitySearch(exampleTitle = exampleEntity.title)
+
+        // when
+        val expectedExample = exampleRepositoryAdapter.getByCriteria(exampleEntitySearch)
+
+        // then
+        assertNotNull(expectedExample)
+        assertEquals(exampleEntitySearch.exampleTitle, expectedExample[0].title)
+        assertEquals(exampleEntity.description, expectedExample[0].description)
     }
 
 }
