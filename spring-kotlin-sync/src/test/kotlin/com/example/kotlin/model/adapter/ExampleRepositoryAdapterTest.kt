@@ -69,4 +69,20 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         assertEquals(exampleEntity.description, expectedExample[0].description)
     }
 
+    @Test
+    fun `Example 조회 테스트 - 데이터가 존재하지 않을 경우 빈 리스트를 반환한다`()
+    {
+        // given
+        val exampleEntity = ExampleEntity(title = "title", description = "description")
+        exampleJpaRepository.save(exampleEntity)
+        val exampleEntitySearch = ExampleEntitySearch(exampleTitle = "notExistTitle")
+
+        // when
+        val expectedExample = exampleRepositoryAdapter.getByCriteria(exampleEntitySearch)
+
+        // then
+        assertNotNull(expectedExample)
+        assertTrue(expectedExample.isEmpty())
+    }
+
 }
