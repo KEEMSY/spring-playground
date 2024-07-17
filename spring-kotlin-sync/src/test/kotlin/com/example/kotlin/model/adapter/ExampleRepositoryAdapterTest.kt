@@ -85,4 +85,31 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         assertTrue(expectedExample.isEmpty())
     }
 
+    @Test
+    fun `id를 사용하여 Example 조회 테스트`() {
+        // given
+        val exampleEntity = ExampleEntity(title = "title", description = "description")
+        exampleJpaRepository.save(exampleEntity)
+
+        // when
+        val expectedExample = exampleRepositoryAdapter.getById(exampleEntity.id!!)
+
+        // then
+        assertNotNull(expectedExample)
+        assertEquals(exampleEntity.title, expectedExample?.title)
+        assertEquals(exampleEntity.description, expectedExample?.description)
+    }
+
+    @Test
+    fun `id를 사용하여 Example 조회 테스트 - 데이터가 존재하지 않을 경우 null을 반환한다`() {
+        // given
+        val exampleEntity = ExampleEntity(title = "title", description = "description")
+        exampleJpaRepository.save(exampleEntity)
+
+        // when
+        val expectedExample = exampleRepositoryAdapter.getById(0)
+
+        // then
+        assertNull(expectedExample)
+    }
 }

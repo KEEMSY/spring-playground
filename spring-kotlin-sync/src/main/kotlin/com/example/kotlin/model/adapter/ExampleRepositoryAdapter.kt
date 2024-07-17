@@ -38,7 +38,12 @@ class ExampleRepositoryAdapter (
     }
 
     override fun getById(id: Long): Example? {
-        TODO("Not yet implemented")
+        return try {
+            val entity = exampleQuerydslRepository.readExampleById(id)
+            entity?.toDomain()
+        } catch (e: Exception) {
+            throw ExampleSearchException("조회 과정에서 알수 없는 에러가 발생 했습니다.", e)
+        }
     }
 
     override fun getAll(): List<Example> {
