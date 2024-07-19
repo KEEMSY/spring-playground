@@ -9,6 +9,6 @@ interface ExampleRepository {
     fun getByCriteria(exampleEntitySearch: ExampleEntitySearch): List<Example>
     fun getById(id: Long): Example?
     fun getAll(): List<Example>
-    fun modify(exampleEntity: Example): Example
+    fun modify(exampleId: Long, example: Example): Example
     fun remove(id: Long)
 }

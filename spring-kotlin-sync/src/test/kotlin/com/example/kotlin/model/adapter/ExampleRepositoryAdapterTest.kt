@@ -4,6 +4,7 @@ import com.example.kotlin.business.domain.Example
 import com.example.kotlin.dto.ExampleEntitySearch
 import com.example.kotlin.model.entity.ExampleEntity
 import com.example.kotlin.model.exception.ExampleCreationException
+import com.example.kotlin.model.exception.ExampleSearchException
 import com.example.kotlin.model.repository.ExampleJpaRepository
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
 class ExampleRepositoryAdapterTest @Autowired constructor(
@@ -111,5 +113,128 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
 
         // then
         assertNull(expectedExample)
+    }
+
+    @Test
+    fun `모든 Example 조회 테스트`() {
+        // given
+        val exampleEntityList = mutableListOf(
+            ExampleEntity(title = "title", description = "description"),
+            ExampleEntity(title = "similarTitle", description = "similarDescription"),
+            ExampleEntity(title = "unexpectedTitle", description = "unexpectedDescription")
+        )
+        exampleJpaRepository.saveAll(exampleEntityList)
+
+        // when
+        val expectedExampleList = exampleRepositoryAdapter.getAll()
+
+        // then
+        assertNotNull(expectedExampleList)
+        assertEquals(exampleEntityList.size, expectedExampleList.size)
+    }
+
+    @Test
+    fun `모든 Example 조회 테스트 - 데이터가 존재하지 않을 경우`() {
+        // when
+        val expectedExampleList = exampleRepositoryAdapter.getAll()
+
+        // then
+        assertNotNull(expectedExampleList)
+        assertTrue(expectedExampleList.isEmpty())
+    }
+
+    @Test
+    @Transactional
+    fun `Example 수정 테스트`() {
+        // given
+        val exampleEntity = ExampleEntity(title = "title", description = "description")
+        exampleJpaRepository.save(exampleEntity)
+        val exampleId = exampleEntity.id!!
+        val inputExample = Example(title = "modifiedTitle", description = "modifiedDescription")
+
+        // when
+        val expectedExample = exampleRepositoryAdapter.modify(exampleId = exampleId, inputExample)
+
+        // then
+        assertNotNull(expectedExample)
+        assertEquals(inputExample.title, expectedExample.title)
+        assertEquals(inputExample.description, expectedExample.description)
+    }
+
+    @Test
+    fun `Example 수정 테스트 - 데이터가 존재하지 않을 경우 ExampleSearchException이 발생한다`() {
+        // given
+        val exampleEntity = ExampleEntity(title = "title", description = "description")
+        exampleJpaRepository.save(exampleEntity)
+        val unExpectedExampleId = 999L
+        val inputExample = Example(title = "modifiedTitle", description = "modifiedDescription")
+
+        // when & then
+        val exception = assertThrows<ExampleSearchException> {
+            exampleRepositoryAdapter.modify(exampleId = unExpectedExampleId, inputExample)
+        }
+
+        assertEquals("수정할 데이터를 찾을 수 없습니다.", exception.message)
+    }
+
+    @Test
+    fun `Example 수정 테스트 - title이 null일 경우 IllegalArgumentException이 발생한다`() {
+        // given
+        val exampleEntity = ExampleEntity(title = "title", description = "description")
+        exampleJpaRepository.save(exampleEntity)
+        val exampleId = exampleEntity.id!!
+        val inputExample = Example(title = null, description = "modifiedDescription")
+
+        // when & then
+        val exception = assertThrows<IllegalArgumentException> {
+            exampleRepositoryAdapter.modify(exampleId = exampleId, inputExample)
+        }
+
+        assertEquals("제목은 null이 될 수 없습니다.", exception.message)
+    }
+
+    @Test
+    fun `Example 수정 테스트 - description이 null일 경우 IllegalArgumentException이 발생한다`() {
+        // given
+        val exampleEntity = ExampleEntity(title = "title", description = "description")
+        exampleJpaRepository.save(exampleEntity)
+        val exampleId = exampleEntity.id!!
+        val inputExample = Example(title = "modifiedTitle", description = null)
+
+        // when & then
+        val exception = assertThrows<IllegalArgumentException> {
+            exampleRepositoryAdapter.modify(exampleId = exampleId, inputExample)
+        }
+
+        assertEquals("설명은 null이 될 수 없습니다.", exception.message)
+    }
+
+    @Test
+    fun `Example 삭제 테스트`() {
+        // given
+        val exampleEntity = ExampleEntity(title = "title", description = "description")
+        exampleJpaRepository.save(exampleEntity)
+        val exampleId = exampleEntity.id!!
+
+        // when
+        exampleRepositoryAdapter.remove(exampleId)
+
+        // then
+        val expectedExample = exampleJpaRepository.findById(exampleId)
+        assertFalse(expectedExample.isPresent)
+    }
+
+    @Test
+    fun `Example 삭제 테스트 - 데이터가 존재하지 않을 경우`() {
+        // given
+        val exampleEntity = ExampleEntity(title = "title", description = "description")
+        exampleJpaRepository.save(exampleEntity)
+        val unExpectedExampleId = 999L
+
+        // when & then
+        val exception = assertThrows<ExampleSearchException> {
+            exampleRepositoryAdapter.remove(unExpectedExampleId)
+        }
+        assertEquals("삭제할 데이터를 찾을 수 없습니다.", exception.message)
     }
 }

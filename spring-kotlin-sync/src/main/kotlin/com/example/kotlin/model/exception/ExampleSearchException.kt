@@ -1,4 +1,6 @@
 package com.example.kotlin.model.exception
 
-class ExampleSearchException(message: String, cause: Throwable) : RuntimeException(message, cause) {
+class ExampleSearchException : RuntimeException {
+    constructor(message: String) : super(message)
+    constructor(message: String, cause: Throwable) : super(message, cause)
 }
