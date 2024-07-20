@@ -17,7 +17,7 @@ class ExampleRepositoryAdapter(
 ) : ExampleRepository {
 
     @Transactional
-    override fun save(example: Example): Example {
+    override fun create(example: Example): Example {
         return try {
             val exampleEntity = example.toEntity()
             val savedExampleEntity = exampleJpaRepository.save(exampleEntity)
@@ -27,7 +27,7 @@ class ExampleRepositoryAdapter(
         }
     }
 
-    override fun getByCriteria(exampleEntitySearch: ExampleEntitySearch): List<Example> {
+    override fun readExampleListByCriteria(exampleEntitySearch: ExampleEntitySearch): List<Example> {
         return try {
             val entityList = exampleQuerydslRepository.readExampleBy(exampleEntitySearch)
             val exampleList = entityList.map { it.toDomain() }
@@ -37,7 +37,7 @@ class ExampleRepositoryAdapter(
         }
     }
 
-    override fun getById(id: Long): Example? {
+    override fun readExampleById(id: Long): Example? {
         return try {
             val entity = exampleQuerydslRepository.readExampleById(id)
             entity?.toDomain()
@@ -46,18 +46,8 @@ class ExampleRepositoryAdapter(
         }
     }
 
-    override fun getAll(): List<Example> {
-        return try {
-            val entityList = exampleQuerydslRepository.readExampleList()
-            val exampleList = entityList.map { it.toDomain() }
-            exampleList
-        } catch (e: Exception) {
-            throw ExampleSearchException("조회 과정에서 알수 없는 에러가 발생 했습니다.", e)
-        }
-    }
-
     @Transactional
-    override fun modify(exampleId: Long, example: Example): Example {
+    override fun update(exampleId: Long, example: Example): Example {
         return try {
             val entity = exampleJpaRepository.findById(exampleId)
                 .orElseThrow { ExampleSearchException("수정할 데이터를 찾을 수 없습니다.") }
@@ -75,7 +65,7 @@ class ExampleRepositoryAdapter(
         }
     }
 
-    override fun remove(id: Long) {
+    override fun delete(id: Long) {
         try {
             val exists = exampleJpaRepository.existsById(id)
             if (!exists) {

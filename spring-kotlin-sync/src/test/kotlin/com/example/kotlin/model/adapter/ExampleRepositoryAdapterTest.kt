@@ -32,7 +32,7 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         val inputExample = Example(title = exampleEntity.title, description = exampleEntity.description)
 
         // when
-        val expectedExample = exampleRepositoryAdapter.save(inputExample)
+        val expectedExample = exampleRepositoryAdapter.create(inputExample)
 
         // then
         assertNotNull(expectedExample)
@@ -49,7 +49,7 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
 
         // when & then
         val exception = assertThrows<ExampleCreationException> {
-            exampleRepositoryAdapter.save(inputExample)
+            exampleRepositoryAdapter.create(inputExample)
         }
 
         assertEquals("Example을 생성하는데 실패 했습니다.", exception.message)
@@ -63,7 +63,7 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         val exampleEntitySearch = ExampleEntitySearch(exampleTitle = exampleEntity.title)
 
         // when
-        val expectedExample = exampleRepositoryAdapter.getByCriteria(exampleEntitySearch)
+        val expectedExample = exampleRepositoryAdapter.readExampleListByCriteria(exampleEntitySearch)
 
         // then
         assertNotNull(expectedExample)
@@ -72,15 +72,14 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
     }
 
     @Test
-    fun `Example 조회 테스트 - 데이터가 존재하지 않을 경우 빈 리스트를 반환한다`()
-    {
+    fun `Example 조회 테스트 - 데이터가 존재하지 않을 경우 빈 리스트를 반환한다`() {
         // given
         val exampleEntity = ExampleEntity(title = "title", description = "description")
         exampleJpaRepository.save(exampleEntity)
         val exampleEntitySearch = ExampleEntitySearch(exampleTitle = "notExistTitle")
 
         // when
-        val expectedExample = exampleRepositoryAdapter.getByCriteria(exampleEntitySearch)
+        val expectedExample = exampleRepositoryAdapter.readExampleListByCriteria(exampleEntitySearch)
 
         // then
         assertNotNull(expectedExample)
@@ -94,7 +93,7 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         exampleJpaRepository.save(exampleEntity)
 
         // when
-        val expectedExample = exampleRepositoryAdapter.getById(exampleEntity.id!!)
+        val expectedExample = exampleRepositoryAdapter.readExampleById(exampleEntity.id!!)
 
         // then
         assertNotNull(expectedExample)
@@ -109,39 +108,12 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         exampleJpaRepository.save(exampleEntity)
 
         // when
-        val expectedExample = exampleRepositoryAdapter.getById(0)
+        val expectedExample = exampleRepositoryAdapter.readExampleById(0)
 
         // then
         assertNull(expectedExample)
     }
 
-    @Test
-    fun `모든 Example 조회 테스트`() {
-        // given
-        val exampleEntityList = mutableListOf(
-            ExampleEntity(title = "title", description = "description"),
-            ExampleEntity(title = "similarTitle", description = "similarDescription"),
-            ExampleEntity(title = "unexpectedTitle", description = "unexpectedDescription")
-        )
-        exampleJpaRepository.saveAll(exampleEntityList)
-
-        // when
-        val expectedExampleList = exampleRepositoryAdapter.getAll()
-
-        // then
-        assertNotNull(expectedExampleList)
-        assertEquals(exampleEntityList.size, expectedExampleList.size)
-    }
-
-    @Test
-    fun `모든 Example 조회 테스트 - 데이터가 존재하지 않을 경우`() {
-        // when
-        val expectedExampleList = exampleRepositoryAdapter.getAll()
-
-        // then
-        assertNotNull(expectedExampleList)
-        assertTrue(expectedExampleList.isEmpty())
-    }
 
     @Test
     @Transactional
@@ -153,7 +125,7 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         val inputExample = Example(title = "modifiedTitle", description = "modifiedDescription")
 
         // when
-        val expectedExample = exampleRepositoryAdapter.modify(exampleId = exampleId, inputExample)
+        val expectedExample = exampleRepositoryAdapter.update(exampleId = exampleId, inputExample)
 
         // then
         assertNotNull(expectedExample)
@@ -171,7 +143,7 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
 
         // when & then
         val exception = assertThrows<ExampleSearchException> {
-            exampleRepositoryAdapter.modify(exampleId = unExpectedExampleId, inputExample)
+            exampleRepositoryAdapter.update(exampleId = unExpectedExampleId, inputExample)
         }
 
         assertEquals("수정할 데이터를 찾을 수 없습니다.", exception.message)
@@ -187,7 +159,7 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
 
         // when & then
         val exception = assertThrows<IllegalArgumentException> {
-            exampleRepositoryAdapter.modify(exampleId = exampleId, inputExample)
+            exampleRepositoryAdapter.update(exampleId = exampleId, inputExample)
         }
 
         assertEquals("제목은 null이 될 수 없습니다.", exception.message)
@@ -203,7 +175,7 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
 
         // when & then
         val exception = assertThrows<IllegalArgumentException> {
-            exampleRepositoryAdapter.modify(exampleId = exampleId, inputExample)
+            exampleRepositoryAdapter.update(exampleId = exampleId, inputExample)
         }
 
         assertEquals("설명은 null이 될 수 없습니다.", exception.message)
@@ -217,7 +189,7 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         val exampleId = exampleEntity.id!!
 
         // when
-        exampleRepositoryAdapter.remove(exampleId)
+        exampleRepositoryAdapter.delete(exampleId)
 
         // then
         val expectedExample = exampleJpaRepository.findById(exampleId)
@@ -233,7 +205,7 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
 
         // when & then
         val exception = assertThrows<ExampleSearchException> {
-            exampleRepositoryAdapter.remove(unExpectedExampleId)
+            exampleRepositoryAdapter.delete(unExpectedExampleId)
         }
         assertEquals("삭제할 데이터를 찾을 수 없습니다.", exception.message)
     }

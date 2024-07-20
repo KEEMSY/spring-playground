@@ -5,10 +5,13 @@ import com.example.kotlin.dto.ExampleEntitySearch
 
 
 interface ExampleRepository {
-    fun save(example: Example): Example
-    fun getByCriteria(exampleEntitySearch: ExampleEntitySearch): List<Example>
-    fun getById(id: Long): Example?
-    fun getAll(): List<Example>
-    fun modify(exampleId: Long, example: Example): Example
-    fun remove(id: Long)
+    /**
+     DB Port(DBInterface)
+     * 작성하는 메서드 명은 DB CRUD에 맞춰 작성한다.
+     */
+    fun create(example: Example): Example
+    fun readExampleListByCriteria(exampleEntitySearch: ExampleEntitySearch): List<Example>
+    fun readExampleById(id: Long): Example?
+    fun update(exampleId: Long, example: Example): Example
+    fun delete(id: Long)
 }
