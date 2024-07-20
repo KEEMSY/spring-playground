@@ -1,6 +1,6 @@
 package com.example.kotlin.model.repository
 
-import com.example.kotlin.dto.ExampleEntitySearch
+import com.example.kotlin.dto.ExampleSearch
 import com.example.kotlin.model.entity.ExampleEntity
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
@@ -59,10 +59,10 @@ class ExampleQuerydslRepositoryTest @Autowired constructor(
 
         exampleJpaRepository.saveAll(exampleEntities)
 
-        val exampleEntitySearch = ExampleEntitySearch()
+        val exampleSearch = ExampleSearch()
 
         // when
-        val result = exampleQuerydslRepository.readExampleBy(exampleEntitySearch)
+        val result = exampleQuerydslRepository.readExampleBy(exampleSearch)
 
         // then
         assertNotNull(result)
@@ -81,10 +81,10 @@ class ExampleQuerydslRepositoryTest @Autowired constructor(
         exampleJpaRepository.saveAll(exampleEntities)
 
 
-        val exampleEntitySearch = ExampleEntitySearch(exampleTitle = "title")
+        val exampleSearch = ExampleSearch(exampleTitle = "title")
 
         // when
-        val result = exampleQuerydslRepository.readExampleBy(exampleEntitySearch)
+        val result = exampleQuerydslRepository.readExampleBy(exampleSearch)
 
         // then
         assertNotNull(result)
@@ -106,10 +106,10 @@ fun `ExampleEntitySearch로 description이 일치하는 데이터가 없을 경�
 
         exampleJpaRepository.saveAll(exampleEntities)
 
-        val exampleEntitySearch = ExampleEntitySearch(exampleDescription = "notExistDescription")
+        val exampleSearch = ExampleSearch(exampleDescription = "notExistDescription")
 
         // when
-        val result = exampleQuerydslRepository.readExampleBy(exampleEntitySearch)
+        val result = exampleQuerydslRepository.readExampleBy(exampleSearch)
         println("result: ${result}")
 
         // then

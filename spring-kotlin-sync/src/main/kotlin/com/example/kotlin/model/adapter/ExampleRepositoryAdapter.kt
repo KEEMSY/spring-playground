@@ -2,7 +2,7 @@ package com.example.kotlin.model.adapter
 
 import com.example.kotlin.business.domain.Example
 import com.example.kotlin.business.port.repository.ExampleRepository
-import com.example.kotlin.dto.ExampleEntitySearch
+import com.example.kotlin.dto.ExampleSearch
 import com.example.kotlin.model.exception.ExampleCreationException
 import com.example.kotlin.model.exception.ExampleSearchException
 import com.example.kotlin.model.repository.ExampleJpaRepository
@@ -27,9 +27,10 @@ class ExampleRepositoryAdapter(
         }
     }
 
-    override fun readExampleListByCriteria(exampleEntitySearch: ExampleEntitySearch): List<Example> {
+    @Transactional(readOnly = true)
+    override fun readExampleListByCriteria(exampleSearch: ExampleSearch): List<Example> {
         return try {
-            val entityList = exampleQuerydslRepository.readExampleBy(exampleEntitySearch)
+            val entityList = exampleQuerydslRepository.readExampleBy(exampleSearch)
             val exampleList = entityList.map { it.toDomain() }
             exampleList
         } catch (e: Exception) {
@@ -37,6 +38,7 @@ class ExampleRepositoryAdapter(
         }
     }
 
+    @Transactional(readOnly = true)
     override fun readExampleById(id: Long): Example? {
         return try {
             val entity = exampleQuerydslRepository.readExampleById(id)
@@ -65,6 +67,7 @@ class ExampleRepositoryAdapter(
         }
     }
 
+    @Transactional
     override fun delete(id: Long) {
         try {
             val exists = exampleJpaRepository.existsById(id)

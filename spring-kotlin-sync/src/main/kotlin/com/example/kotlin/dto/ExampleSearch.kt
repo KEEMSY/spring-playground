@@ -12,7 +12,7 @@ package com.example.kotlin.dto
  -
 
  */
-data class ExampleEntitySearch
+data class ExampleSearch
     (
     val exampleTitle: String? = null,
     val exampleDescription: String? = null

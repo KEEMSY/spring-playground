@@ -1,7 +1,7 @@
 package com.example.kotlin.model.adapter
 
 import com.example.kotlin.business.domain.Example
-import com.example.kotlin.dto.ExampleEntitySearch
+import com.example.kotlin.dto.ExampleSearch
 import com.example.kotlin.model.entity.ExampleEntity
 import com.example.kotlin.model.exception.ExampleCreationException
 import com.example.kotlin.model.exception.ExampleSearchException
@@ -60,14 +60,14 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         // given
         val exampleEntity = ExampleEntity(title = "title", description = "description")
         exampleJpaRepository.save(exampleEntity)
-        val exampleEntitySearch = ExampleEntitySearch(exampleTitle = exampleEntity.title)
+        val exampleSearch = ExampleSearch(exampleTitle = exampleEntity.title)
 
         // when
-        val expectedExample = exampleRepositoryAdapter.readExampleListByCriteria(exampleEntitySearch)
+        val expectedExample = exampleRepositoryAdapter.readExampleListByCriteria(exampleSearch)
 
         // then
         assertNotNull(expectedExample)
-        assertEquals(exampleEntitySearch.exampleTitle, expectedExample[0].title)
+        assertEquals(exampleSearch.exampleTitle, expectedExample[0].title)
         assertEquals(exampleEntity.description, expectedExample[0].description)
     }
 
@@ -76,10 +76,10 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         // given
         val exampleEntity = ExampleEntity(title = "title", description = "description")
         exampleJpaRepository.save(exampleEntity)
-        val exampleEntitySearch = ExampleEntitySearch(exampleTitle = "notExistTitle")
+        val exampleSearch = ExampleSearch(exampleTitle = "notExistTitle")
 
         // when
-        val expectedExample = exampleRepositoryAdapter.readExampleListByCriteria(exampleEntitySearch)
+        val expectedExample = exampleRepositoryAdapter.readExampleListByCriteria(exampleSearch)
 
         // then
         assertNotNull(expectedExample)
