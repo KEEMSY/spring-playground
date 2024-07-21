@@ -51,9 +51,9 @@ class ExampleRepositoryAdapter(
     }
 
     @Transactional
-    override fun update(exampleId: Long, example: Example): Example {
+    override fun update(example: Example): Example {
         return try {
-            val entity = exampleJpaRepository.findById(exampleId)
+            val entity = exampleJpaRepository.findById(example.id!!)
                 .orElseThrow { ExampleSearchException("수정할 데이터를 찾을 수 없습니다.") }
 
             // 엔터티의 업데이트 메서드를 사용하여 필드를 업데이트

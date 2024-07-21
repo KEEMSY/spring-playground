@@ -29,8 +29,8 @@ class ExampleService (private val exampleRepository: ExampleRepository){
         return exampleRepository.readExampleById(id)
     }
 
-    fun modify(exampleId: Long, example: Example): Example {
-        return exampleRepository.update(exampleId, example)
+    fun modify(example: Example): Example {
+        return exampleRepository.update(example)
     }
 
     fun remove(id: Long) {

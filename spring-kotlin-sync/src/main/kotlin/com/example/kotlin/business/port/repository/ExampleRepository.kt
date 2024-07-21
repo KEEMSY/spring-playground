@@ -12,6 +12,6 @@ interface ExampleRepository {
     fun create(example: Example): Example
     fun readExampleListByCriteria(exampleSearch: ExampleSearch): List<Example>
     fun readExampleById(id: Long): Example?
-    fun update(exampleId: Long, example: Example): Example
+    fun update(example: Example): Example
     fun delete(id: Long)
 }

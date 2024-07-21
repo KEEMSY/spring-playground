@@ -122,10 +122,10 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         val exampleEntity = ExampleEntity(title = "title", description = "description")
         exampleJpaRepository.save(exampleEntity)
         val exampleId = exampleEntity.id!!
-        val inputExample = Example(title = "modifiedTitle", description = "modifiedDescription")
+        val inputExample = Example(id = exampleId, title = "modifiedTitle", description = "modifiedDescription")
 
         // when
-        val expectedExample = exampleRepositoryAdapter.update(exampleId = exampleId, inputExample)
+        val expectedExample = exampleRepositoryAdapter.update(inputExample)
 
         // then
         assertNotNull(expectedExample)
@@ -139,11 +139,11 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         val exampleEntity = ExampleEntity(title = "title", description = "description")
         exampleJpaRepository.save(exampleEntity)
         val unExpectedExampleId = 999L
-        val inputExample = Example(title = "modifiedTitle", description = "modifiedDescription")
+        val inputExample = Example(id = unExpectedExampleId, title = "modifiedTitle", description = "modifiedDescription")
 
         // when & then
         val exception = assertThrows<ExampleSearchException> {
-            exampleRepositoryAdapter.update(exampleId = unExpectedExampleId, inputExample)
+            exampleRepositoryAdapter.update(inputExample)
         }
 
         assertEquals("수정할 데이터를 찾을 수 없습니다.", exception.message)
@@ -154,12 +154,13 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         // given
         val exampleEntity = ExampleEntity(title = "title", description = "description")
         exampleJpaRepository.save(exampleEntity)
+
         val exampleId = exampleEntity.id!!
-        val inputExample = Example(title = null, description = "modifiedDescription")
+        val inputExample = Example(id = exampleId, title = null, description = "modifiedDescription")
 
         // when & then
         val exception = assertThrows<IllegalArgumentException> {
-            exampleRepositoryAdapter.update(exampleId = exampleId, inputExample)
+            exampleRepositoryAdapter.update(inputExample)
         }
 
         assertEquals("제목은 null이 될 수 없습니다.", exception.message)
@@ -171,11 +172,11 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         val exampleEntity = ExampleEntity(title = "title", description = "description")
         exampleJpaRepository.save(exampleEntity)
         val exampleId = exampleEntity.id!!
-        val inputExample = Example(title = "modifiedTitle", description = null)
+        val inputExample = Example(id = exampleId, title = "modifiedTitle", description = null)
 
         // when & then
         val exception = assertThrows<IllegalArgumentException> {
-            exampleRepositoryAdapter.update(exampleId = exampleId, inputExample)
+            exampleRepositoryAdapter.update(inputExample)
         }
 
         assertEquals("설명은 null이 될 수 없습니다.", exception.message)
