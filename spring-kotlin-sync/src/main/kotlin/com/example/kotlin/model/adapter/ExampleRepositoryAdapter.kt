@@ -7,6 +7,8 @@ import com.example.kotlin.model.exception.ExampleCreationException
 import com.example.kotlin.model.exception.ExampleSearchException
 import com.example.kotlin.model.repository.ExampleJpaRepository
 import com.example.kotlin.model.repository.ExampleQuerydslRepository
+import com.example.kotlin.util.toDomain
+import com.example.kotlin.util.toEntity
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
@@ -54,8 +56,9 @@ class ExampleRepositoryAdapter(
             val entity = exampleJpaRepository.findById(exampleId)
                 .orElseThrow { ExampleSearchException("수정할 데이터를 찾을 수 없습니다.") }
 
-            entity.title = example.title ?: throw IllegalArgumentException("제목은 null이 될 수 없습니다.")
-            entity.description = example.description ?: throw IllegalArgumentException("설명은 null이 될 수 없습니다.")
+            // 엔터티의 업데이트 메서드를 사용하여 필드를 업데이트
+            entity.updateTitle(example.title ?: throw IllegalArgumentException("제목은 null이 될 수 없습니다."))
+            entity.updateDescription(example.description ?: throw IllegalArgumentException("설명은 null이 될 수 없습니다."))
 
             val savedEntity = exampleJpaRepository.save(entity)
             savedEntity.toDomain()

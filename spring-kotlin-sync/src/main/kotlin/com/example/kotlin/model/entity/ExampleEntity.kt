@@ -1,10 +1,9 @@
 package com.example.kotlin.model.entity
 
-import com.example.kotlin.business.domain.Example
 import jakarta.persistence.*
 
 @Entity
-data class ExampleEntity (
+data class ExampleEntity(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
     var title: String,
@@ -17,6 +16,7 @@ data class ExampleEntity (
     fun updateTitle(title: String) {
         this.title = title
     }
+
     fun updateDescription(description: String) {
         this.description = description
     }
@@ -25,10 +25,4 @@ data class ExampleEntity (
         return "ExampleEntity(id=$id, title='$title', description='$description')"
     }
 
-    fun toDomain(): Example {
-        return Example(
-            title = title,
-            description = description
-        )
-    }
 }
