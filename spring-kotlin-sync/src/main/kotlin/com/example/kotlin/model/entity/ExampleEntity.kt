@@ -3,6 +3,7 @@ package com.example.kotlin.model.entity
 import jakarta.persistence.*
 
 @Entity
+@Table(name = "example_entity")
 data class ExampleEntity(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
