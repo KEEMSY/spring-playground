@@ -1,4 +1,4 @@
-package com.example.kotlin.config
+package com.example.kotlin.model.config
 
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.persistence.EntityManager
