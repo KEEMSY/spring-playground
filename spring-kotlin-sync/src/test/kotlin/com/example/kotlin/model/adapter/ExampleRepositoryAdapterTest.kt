@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.domain.PageRequest
 import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
@@ -62,8 +63,12 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         exampleJpaRepository.save(exampleEntity)
         val exampleSearch = ExampleSearch(exampleTitle = exampleEntity.title)
 
+        val page = 0;
+        val size = 10;
+        val pageable = PageRequest.of(page, size);
+
         // when
-        val expectedExample = exampleRepositoryAdapter.readExampleListByCriteria(exampleSearch)
+        val expectedExample = exampleRepositoryAdapter.readExampleListByCriteria(exampleSearch, pageable)
 
         // then
         assertNotNull(expectedExample)
@@ -78,8 +83,12 @@ class ExampleRepositoryAdapterTest @Autowired constructor(
         exampleJpaRepository.save(exampleEntity)
         val exampleSearch = ExampleSearch(exampleTitle = "notExistTitle")
 
+        val page = 0;
+        val size = 10;
+        val pageable = PageRequest.of(page, size);
+
         // when
-        val expectedExample = exampleRepositoryAdapter.readExampleListByCriteria(exampleSearch)
+        val expectedExample = exampleRepositoryAdapter.readExampleListByCriteria(exampleSearch, pageable)
 
         // then
         assertNotNull(expectedExample)

@@ -5,6 +5,7 @@ import com.example.kotlin.model.entity.ExampleEntity
 import com.example.kotlin.model.entity.QExampleEntity.exampleEntity
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Component
 
 @Component
@@ -24,13 +25,15 @@ class ExampleQuerydslRepository(
             .fetchOne()
     }
 
-    fun readExampleBy(exampleSearch: ExampleSearch): List<ExampleEntity> {
+    fun readExampleBy(exampleSearch: ExampleSearch, pageable: Pageable): List<ExampleEntity> {
         return queryFactory
             .selectFrom(exampleEntity)
             .where(
                 titleContains(exampleSearch.exampleTitle),
                 descriptionContains(exampleSearch.exampleDescription)
             )
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
             .fetch()
     }
 

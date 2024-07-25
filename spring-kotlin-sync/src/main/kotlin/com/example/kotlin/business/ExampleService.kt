@@ -3,6 +3,7 @@ package com.example.kotlin.business
 import com.example.kotlin.business.domain.Example
 import com.example.kotlin.business.port.repository.ExampleRepository
 import com.example.kotlin.dto.ExampleSearch
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 @Service
@@ -21,8 +22,8 @@ class ExampleService (private val exampleRepository: ExampleRepository){
         return exampleRepository.create(example)
     }
 
-    fun getByCriteria(exampleSearch: ExampleSearch): List<Example> {
-        return exampleRepository.readExampleListByCriteria(exampleSearch)
+    fun getByCriteria(exampleSearch: ExampleSearch, pageable: Pageable): List<Example> {
+        return exampleRepository.readExampleListByCriteria(exampleSearch, pageable)
     }
 
     fun getById(id: Long): Example? {

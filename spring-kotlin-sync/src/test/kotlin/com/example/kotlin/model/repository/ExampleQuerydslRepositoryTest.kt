@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.domain.PageRequest
 
 @SpringBootTest
 class ExampleQuerydslRepositoryTest @Autowired constructor(
@@ -61,8 +62,12 @@ class ExampleQuerydslRepositoryTest @Autowired constructor(
 
         val exampleSearch = ExampleSearch()
 
+        val page = 0;
+        val size = 10;
+        val pageable = PageRequest.of(page, size);
+
         // when
-        val result = exampleQuerydslRepository.readExampleBy(exampleSearch)
+        val result = exampleQuerydslRepository.readExampleBy(exampleSearch=exampleSearch, pageable=pageable)
 
         // then
         assertNotNull(result)
@@ -83,8 +88,12 @@ class ExampleQuerydslRepositoryTest @Autowired constructor(
 
         val exampleSearch = ExampleSearch(exampleTitle = "title")
 
+        val page = 0;
+        val size = 10;
+        val pageable = PageRequest.of(page, size);
+
         // when
-        val result = exampleQuerydslRepository.readExampleBy(exampleSearch)
+        val result = exampleQuerydslRepository.readExampleBy(exampleSearch=exampleSearch, pageable=pageable)
 
         // then
         assertNotNull(result)
@@ -108,12 +117,37 @@ fun `ExampleEntitySearch로 description이 일치하는 데이터가 없을 경�
 
         val exampleSearch = ExampleSearch(exampleDescription = "notExistDescription")
 
+        val page = 0;
+        val size = 10;
+        val pageable = PageRequest.of(page, size);
+
         // when
-        val result = exampleQuerydslRepository.readExampleBy(exampleSearch)
+        val result = exampleQuerydslRepository.readExampleBy(exampleSearch=exampleSearch, pageable=pageable)
         println("result: ${result}")
 
         // then
         assertNotNull(result)
         assertTrue(result.isEmpty())
+    }
+
+    @Test
+    fun `페이지네이션이 적용된 경우, 해당 페이지의 데이터를 반환한다`() {
+        // given
+        val exampleEntities = listOf(
+            ExampleEntity(title = "title", description = "description"),
+            ExampleEntity(title = "similarTitle", description = "similarDescription"),
+            ExampleEntity(title = "unexpectedTitle", description = "unexpectedDescription")
+        )
+        exampleJpaRepository.saveAll(exampleEntities)
+
+        val exampleSearch = ExampleSearch()
+        val pageable = PageRequest.of(0, 2)
+
+        // when
+        val result = exampleQuerydslRepository.readExampleBy(exampleSearch = exampleSearch, pageable = pageable)
+
+        // then
+        assertNotNull(result)
+        assertEquals(2, result.size)
     }
 }

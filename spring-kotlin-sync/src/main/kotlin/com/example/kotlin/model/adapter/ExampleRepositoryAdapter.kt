@@ -9,6 +9,7 @@ import com.example.kotlin.model.repository.ExampleJpaRepository
 import com.example.kotlin.model.repository.ExampleQuerydslRepository
 import com.example.kotlin.util.toDomain
 import com.example.kotlin.util.toEntity
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
@@ -30,9 +31,9 @@ class ExampleRepositoryAdapter(
     }
 
     @Transactional(readOnly = true)
-    override fun readExampleListByCriteria(exampleSearch: ExampleSearch): List<Example> {
+    override fun readExampleListByCriteria(exampleSearch: ExampleSearch, pageable: Pageable): List<Example> {
         return try {
-            val entityList = exampleQuerydslRepository.readExampleBy(exampleSearch)
+            val entityList = exampleQuerydslRepository.readExampleBy(exampleSearch=exampleSearch, pageable=pageable)
             val exampleList = entityList.map { it.toDomain() }
             exampleList
         } catch (e: Exception) {
