@@ -1,12 +1,15 @@
 package com.example.kotlin.model.repository
 
+import com.example.kotlin.dto.ExampleDTOByUsingQueryProjection
 import com.example.kotlin.dto.ExampleSearch
 import com.example.kotlin.model.entity.ExampleEntity
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 
 @SpringBootTest
@@ -105,7 +108,7 @@ class ExampleQuerydslRepositoryTest @Autowired constructor(
     }
 
     @Test
-fun `ExampleEntitySearch로 description이 일치하는 데이터가 없을 경우 빈 리스트를 반환한다`() {
+    fun `ExampleEntitySearch로 description이 일치하는 데이터가 없을 경우 빈 리스트를 반환한다`() {
         // given
         val exampleEntities = listOf(
             ExampleEntity(title = "title", description = "description"),
@@ -149,5 +152,48 @@ fun `ExampleEntitySearch로 description이 일치하는 데이터가 없을 경�
         // then
         assertNotNull(result)
         assertEquals(2, result.size)
+    }
+
+    //  DTO 반환 테스트
+    @Test
+    fun `리스트 조회 시, DTO를 바로 반환한다`()  {
+        // given
+        val exampleEntities = listOf(
+            ExampleEntity(title = "title", description = "description"),
+            ExampleEntity(title = "similarTitle", description = "similarDescription"),
+            ExampleEntity(title = "unexpectedTitle", description = "unexpectedDescription")
+        )
+        exampleJpaRepository.saveAll(exampleEntities)
+
+        val exampleSearch = ExampleSearch()
+        val pageable = PageRequest.of(0, 2)
+
+        // when
+        val result: Page<ExampleDTOByUsingQueryProjection> = exampleQuerydslRepository.fetchOrdersWithPagingByFetchResultsWithOptimizeCountQuery(exampleSearch, pageable)
+
+        // then
+        assertNotNull(result)
+        assertEquals(2, result.content.size)
+    }
+
+    @Test
+    fun `코루틴 테스트-리스트 조회 시, DTO를 바로 반환한다`() = runTest {
+        // given
+        val exampleEntities = listOf(
+            ExampleEntity(title = "title", description = "description"),
+            ExampleEntity(title = "similarTitle", description = "similarDescription"),
+            ExampleEntity(title = "unexpectedTitle", description = "unexpectedDescription")
+        )
+        exampleJpaRepository.saveAll(exampleEntities)
+
+        val exampleSearch = ExampleSearch()
+        val pageable = PageRequest.of(0, 2)
+
+        // when
+        val result: Page<ExampleDTOByUsingQueryProjection> = exampleQuerydslRepository.fetchOrdersWithPagingByFetchResultsWithOptimizeCountQueryWithCoroutines(exampleSearch, pageable)
+
+        // then
+        assertNotNull(result)
+        assertEquals(2, result.content.size)
     }
 }
