@@ -36,6 +36,17 @@ class ExampleGroupQuerydslRepository(
             .fetch()
     }
 
+
+    // fetch join을 사용하여 연관된 엔티티를 함께 조회하는 메서드
+    fun readExampleGroupWithExamples(): List<ExampleGroupOneToMany> {
+        return queryFactory
+            .selectFrom(exampleGroupOneToMany)
+            .leftJoin(exampleGroupOneToMany.examples).fetchJoin()
+            .fetch()
+    }
+
+
+    // Querydsl을 사용하여 검색 조건을 생성하는 메서드
     private fun exampleTitleContains(exampleTitle: String?): BooleanExpression {
         return exampleTitle?.let {
             JPAExpressions.selectFrom(exampleEntity)

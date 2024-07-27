@@ -3,6 +3,7 @@ package com.example.kotlin.model.repository
 import com.example.kotlin.dto.ExampleGroupOneToManySearch
 import com.example.kotlin.model.entity.ExampleEntity
 import com.example.kotlin.model.entity.ExampleGroupOneToMany
+import org.hibernate.Hibernate
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Disabled
@@ -181,5 +182,26 @@ class ExampleGroupQuerydslRepositoryTest @Autowired constructor(
         assertEquals(3, result[0].examples.size, "Result examples size should be 1")
     }
 
+    @Test
+    fun `fetch join을 통해 ExampleGroupOneToMany와 관련된 ExampleEntity를 로딩한다`() {
+        // given
+        val group = ExampleGroupOneToMany(name = "Group 1")
+        val example1 = ExampleEntity(title = "Title 1", description = "Description 1")
+        val example2 = ExampleEntity(title = "Title 2", description = "Description 2")
+        group.addExample(example1)
+        group.addExample(example2)
+        exampleGroupJpaRepository.save(group)
+
+        // when
+        val result = exampleGroupQuerydslRepository.readExampleGroupWithExamples()
+
+        // then
+        assertNotNull(result)
+        assertTrue(Hibernate.isInitialized(result[0].examples), "Examples should be eagerly loaded")
+        assertEquals(1, result.size)
+        assertEquals(2, result[0].examples.size)
+        assertEquals("Title 1", result[0].examples[0].title)
+        assertEquals("Title 2", result[0].examples[1].title)
+    }
 
 }
