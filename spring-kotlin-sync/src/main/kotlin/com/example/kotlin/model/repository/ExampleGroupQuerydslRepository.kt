@@ -7,6 +7,9 @@ import com.example.kotlin.model.entity.QExampleGroupOneToMany.exampleGroupOneToM
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.JPAExpressions
 import com.querydsl.jpa.impl.JPAQueryFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.support.PageableExecutionUtils
 import org.springframework.stereotype.Component
 
 @Component
@@ -45,6 +48,52 @@ class ExampleGroupQuerydslRepository(
             .fetch()
     }
 
+    fun readExampleGroupByIdWithExamples(id: Long): ExampleGroupOneToMany? {
+        return queryFactory
+            .selectFrom(exampleGroupOneToMany)
+            .leftJoin(exampleGroupOneToMany.examples).fetchJoin()
+            .where(exampleGroupOneToMany.id.eq(id))
+            .fetchOne()
+    }
+
+    fun readExampleGroupWithExamplesBy(exampleGroupOneToManySearch: ExampleGroupOneToManySearch, pageable: Pageable): List<ExampleGroupOneToMany> {
+        return queryFactory
+            .selectFrom(exampleGroupOneToMany)
+            .leftJoin(exampleGroupOneToMany.examples).fetchJoin()
+            .where(
+                nameContains(exampleGroupOneToManySearch.exampleGroupName),
+                exampleTitleContains(exampleGroupOneToManySearch.exampleTitle)
+            )
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .fetch()
+    }
+
+    fun readExampleGroupWithExamplesByFetchResultsWithOptimizeCountQuery(
+        exampleGroupOneToManySearch: ExampleGroupOneToManySearch,
+        pageable: Pageable
+    ): Page<ExampleGroupOneToMany> {
+        val content = queryFactory
+            .selectFrom(exampleGroupOneToMany)
+            .leftJoin(exampleGroupOneToMany.examples).fetchJoin()
+            .where(
+                nameContains(exampleGroupOneToManySearch.exampleGroupName),
+                exampleTitleContains(exampleGroupOneToManySearch.exampleTitle)
+            )
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .fetch()
+
+        val countQuery = queryFactory
+            .select(exampleGroupOneToMany.count())
+            .from(exampleGroupOneToMany)
+            .where(
+                nameContains(exampleGroupOneToManySearch.exampleGroupName),
+                exampleTitleContains(exampleGroupOneToManySearch.exampleTitle)
+            )
+            .fetchOne() ?: 0L
+        return PageableExecutionUtils.getPage(content, pageable) { countQuery }
+    }
 
     // Querydsl을 사용하여 검색 조건을 생성하는 메서드
     private fun exampleTitleContains(exampleTitle: String?): BooleanExpression {

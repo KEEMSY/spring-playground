@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.domain.PageRequest
 import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
@@ -204,4 +205,74 @@ class ExampleGroupQuerydslRepositoryTest @Autowired constructor(
         assertEquals("Title 2", result[0].examples[1].title)
     }
 
+    @Test
+    fun `fetch join을 통해 ExampleGroupOneToMany와 관련된 ExampleEntity를 로딩한다 - ExampleGroup id`() {
+        // given
+        val group = ExampleGroupOneToMany(name = "Group 1")
+        val example1 = ExampleEntity(title = "Title 1", description = "Description 1")
+        val example2 = ExampleEntity(title = "Title 2", description = "Description 2")
+        group.addExample(example1)
+        group.addExample(example2)
+        exampleGroupJpaRepository.save(group)
+
+        // when
+        val result = exampleGroupQuerydslRepository.readExampleGroupByIdWithExamples(group.id!!)!!
+
+        // then
+        assertNotNull(result)
+        assertTrue(Hibernate.isInitialized(result.examples), "Examples should be eagerly loaded")
+        assertEquals(2, result.examples.size)
+        assertEquals("Title 1", result.examples[0].title)
+        assertEquals("Title 2", result.examples[1].title)
+    }
+
+    @Test
+    fun `fetch join을 통해 ExampleGroupOneToMany와 관련된 ExampleEntity를 로딩한다 - ExampleGroupOneToManySearch, Pageable`() {
+        // given
+        val group = ExampleGroupOneToMany(name = "Group 1")
+        val example1 = ExampleEntity(title = "Title 1", description = "Description 1")
+        val example2 = ExampleEntity(title = "Title 2", description = "Description 2")
+        group.addExample(example1)
+        group.addExample(example2)
+        exampleGroupJpaRepository.save(group)
+
+        val search = ExampleGroupOneToManySearch(exampleGroupName = "Group 1")
+        val pageRequest = PageRequest.of(0, 10)
+
+        // when
+        val result = exampleGroupQuerydslRepository.readExampleGroupWithExamplesBy(search, pageRequest)
+
+        // then
+        assertNotNull(result)
+        assertTrue(Hibernate.isInitialized(result[0].examples), "Examples should be eagerly loaded")
+        assertEquals(1, result.size)
+        assertEquals(2, result[0].examples.size)
+        assertEquals("Title 1", result[0].examples[0].title)
+        assertEquals("Title 2", result[0].examples[1].title)
+    }
+
+    @Test
+    fun `fetch join을 통해 ExampleGroupOneToMany와 관련된 ExampleEntity를 로딩한다 - OptimizeCountQuery`() {
+        // given
+        val group = ExampleGroupOneToMany(name = "Group 1")
+        val example1 = ExampleEntity(title = "Title 1", description = "Description 1")
+        val example2 = ExampleEntity(title = "Title 2", description = "Description 2")
+        group.addExample(example1)
+        group.addExample(example2)
+        exampleGroupJpaRepository.save(group)
+
+        val search = ExampleGroupOneToManySearch(exampleGroupName = "Group 1")
+        val pageRequest = PageRequest.of(0, 1)
+
+        // when
+        val result = exampleGroupQuerydslRepository.readExampleGroupWithExamplesByFetchResultsWithOptimizeCountQuery(search, pageRequest)
+
+        // then
+        assertNotNull(result)
+        assertTrue(Hibernate.isInitialized(result.content[0].examples), "Examples should be eagerly loaded")
+        assertEquals(1, result.content.size)
+        assertEquals(2, result.content[0].examples.size)
+        assertEquals("Title 1", result.content[0].examples[0].title)
+        assertEquals("Title 2", result.content[0].examples[1].title)
+    }
 }
