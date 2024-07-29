@@ -3,7 +3,9 @@ package com.example.kotlin.presentation.api
 import com.example.kotlin.business.ExampleService
 import com.example.kotlin.business.domain.Example
 import com.example.kotlin.dto.ExampleCreateRequest
+import com.example.kotlin.dto.ExampleSearch
 import com.example.kotlin.dto.ExampleUpdateRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -35,5 +37,11 @@ class ExampleAPI(private val exampleService: ExampleService) {
     fun remove(@PathVariable exampleId: Long): ResponseEntity<Unit> {
         exampleService.remove(exampleId)
         return ResponseEntity.noContent().build()
+    }
+
+    @GetMapping("/search")
+    fun getByCriteria(exampleSearch: ExampleSearch, pageable: Pageable): ResponseEntity<List<Example>> {
+        val examples = exampleService.getByCriteria(exampleSearch, pageable)
+        return ResponseEntity.ok(examples)
     }
 }
