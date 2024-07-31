@@ -214,3 +214,58 @@ spring:
 ```
 implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 ```
+
+<br><hr>
+
+## Entity Mapping
+> 요약 
+> - [@Entity](#entity), [@Table]() : 객체와 테이블 매핑
+> - [@Column : 필드와 컬럼 매핑]()
+> - [@Id: 기본 키 매핑]()
+> - [@ManyToOne, @JoinColumn: 연관관계 매핑]()
+
+<br>
+
+### @Entity
+
+ - @Entity 가 붙은 클래스는 JPA가 관리하는 클래스이며, 엔티티라고 한다.
+ - JPA를 사용해서 테이블과 매핑할 클래스는 @Entity 필수이다.
+ - 속성: 네임
+ - JPA에서 사용할 엔티티 이름을 지정한다.
+ - 기본값: 클래스 이름을 그대로 사용한다.
+   - 같은 클래스 이름이 없으면 가급적 기본 값을 사용하도록 한다.
+ - 주의할 점
+  - 엔티티 클래스는 기본 생성자가 반드시 있어야 한다.(파라미터가 없는 `public` 또는 `protected` 생성자)
+  - final 클래스, infinal 클래스, enum, interface, inner 클래스에 사용할 수 없다.
+- 저장할 필드에 final을 사용하면 안된다.
+
+```java
+@Entity
+public class Member {
+  @Id
+  private Long id;
+  private String username;
+  
+  public Member() {
+  }
+}
+```
+
+<br>
+
+
+```java
+@Entity(name = "Member_Name")
+public class Member {
+  @Id
+  private Long id;
+  private String username;
+
+  public Member() {
+  }
+}
+```
+
+<br>
+
+
