@@ -219,7 +219,7 @@ implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 ## Entity Mapping
 > 요약 
-> - [@Entity](#entity), [@Table]() : 객체와 테이블 매핑
+> - [@Entity](#entity), [@Table](#table) : 객체와 테이블 매핑
 > - [@Column : 필드와 컬럼 매핑]()
 > - [@Id: 기본 키 매핑]()
 > - [@ManyToOne, @JoinColumn: 연관관계 매핑]()
@@ -244,7 +244,8 @@ implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 public class Member {
   @Id
   private Long id;
-  private String username;
+  private String name;
+  private int age;
   
   public Member() {
   }
@@ -259,7 +260,8 @@ public class Member {
 public class Member {
   @Id
   private Long id;
-  private String username;
+  private String name;
+  private int age;
 
   public Member() {
   }
@@ -268,4 +270,48 @@ public class Member {
 
 <br>
 
+### @Table
+- 엔터티와 매핑할 테이블을 지정한다.
+- 생략하면 매핑한 엔티티 이름을 테이블 이름으로 사용한다.
+- name 속성을 사용해서 테이블 이름을 지정할 수 있다.
+- catalog, schema 속성은 DDL을 자동 생성할 때 사용한다.
+  - catalog는 데이터베이스 catalog 매핑 된다.
+  - schema는 데이터베이스 schema 매핑 된다.
+- uniqueConstraints(DDL) 속성은 유니크 제약 조건을 지정할 때 사용한다.
+
+```java
+@Entity
+@Table(name = "Member", uniqueConstraints = {@UniqueConstraint(
+  name = "NAME_AGE_UNIQUE",
+  columnNames = {"NAME", "AGE"}
+)})
+public class Member {
+  @Id
+  private Long id;
+  private String name;
+  private int age;
+  
+  public Member() {
+  }
+}
+```
+
+<br>
+
+> 참고 사항 - 데이터베이스 스키마 자동 생성 관련
+>  - DDL을 애플리케이션 실행 시점에 자동 생성한다.
+>    - DDL 생성 기능은 DDL을 자동 생성할 때만 사용되고 JPA 실행 로직에는 영향을 주지 않는다.
+>  - 데이터베이스 방언을 활용해서 데이터베이스에 맞는 적절한 DDL을 생성한다.
+>    - hibernate.dialect 속성에 지정한 데이터베이스 방언을 사용한다.
+>    - 사용하는 데이터베이스에 따라 다른 SQL을 생성한다.
+>  - DDL 생성 기능은 DDL을 자동 생성할 때만 사용하고, 운영 환경에서는 사용하지 않는것이 좋다.
+>    - create: 기존 테이블을 삭제하고 새로 생성한다.
+>    - create-drop: create와 같으나 종료 시점에 테이블 DROP
+>    - update: 변경분만 반영(운영 DB에는 사용하면 안됨)
+>    - validate: 엔티티와 테이블이 정상 매핑되었는지만 확인한다.
+>    - none: 아무것도 하지 않는다.>    
+>    - 환경에 따른 옵션 추천
+>      - 로컬 환경 혹은 초기 개발 단계: create 또는 update
+>      - 테스트 서버: update 또는 validate
+>      - 스테이징과 운영 서버: validate 또는 none
 
