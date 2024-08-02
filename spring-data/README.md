@@ -315,3 +315,62 @@ public class Member {
 >      - 테스트 서버: update 또는 validate
 >      - 스테이징과 운영 서버: validate 또는 none
 
+<br>
+
+##  매핑 어노테이션
+ - `@Column`: 컬럼 매핑
+ - `@Temporal`: 날짜 타입 매핑(이제 잘 쓰이지 않음)
+   - 날짜 타입(java.util.Date, java.util.Calendar)을 매핑할 때 사용 
+   - TemporalType.DATE: 날짜, 데이터베이스 date 타입과 매핑(ex. 2024-08-02)) 
+   - TemporalType.TIME: 시간, 데이터베이스 time 타입과 매핑(ex. 14:30:00)
+   - TemporalType.TIMESTAMP: 날짜와 시간, 데이터베이스 timestamp 타입과 매핑(ex. 2024-08-02 14:30:00)\
+   - LocalDate, LocalDateTime을 사용할 때는 생략 가능()
+ - `@Enumerated`: enum 타입 매핑
+   - EnumType.STRING: enum 이름을 그대로 저장
+   - EnumType.ORDINAL: enum 순서를 저장(사용하지 않음)
+ - `@Lob`: BLOB, CLOB 매핑
+   - 문자 타입이면 CLOB 매핑
+   - 나머지는 BLOB 매핑
+ - `@Transient`: 특정 필드를 컬럼에 매핑하지 않음
+   - DB에 저장하지 않을 필드에 사용
+   - 메모리에서만 사용하고 싶을 때 사용(임시로 값을 보관하고 싶을 때 사용)
+
+### @Column
+| 속성 | 설명                          | 기본값 |
+|---|-----------------------------|---|
+| name | 필드와 매핑할 테이블의 컬럼 이름          | 객체의 필드 이름 |
+| insertable | 등록 가능 여부                    | true |
+| updatable | 변경 가능 여부                    | true |
+| nullable | null 값의 허용 여부               | true |
+| unique | 유니크 제약 조건                   | false |
+| columnDefinition | 데이터베이스 컬럼 정보를 직접 설정         | |
+| length | 문자 길이 제약 조건(String타입에서만 사용) | 255 |
+| precision, scale | BigDecimal 타입에서 사용          | |
+
+```java
+@Entity
+public class Member {
+  @Id
+  private Long id;
+  
+  @Column(name = "name", nullable = false)
+  private String username;
+  
+  private int age;
+  
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date createdDate;
+  
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date lastModifiedDate;
+  
+  @Lob
+  private String description;
+  
+  @Transient
+  private int temp;
+  
+  public Member() {
+  }
+}
+```
