@@ -374,3 +374,43 @@ public class Member {
   }
 }
 ```
+<br>
+
+### 기본 키 매핑
+- `@Id`: 엔티티의 기본 키를 매핑할 때 사용(직접 매핑)
+- `@GeneratedValue`: 기본 키 생성 전략을 명시
+  - IDENTITY: 데이터베이스에 위임(MySQL)
+  - SEQUENCE: 데이터베이스 시퀀스 오브젝트 사용(Oracle)
+    - @SequenceGenerator 필요 
+  - TABLE: 키 생성용 테이블 사용, 모든 DB에서 사용
+    - @TableGenerator 필요
+  - AUTO: 자동 선택(기본값)
+
+<br>
+
+> IDENTITY 전략
+> - 기본 키 생성을 데이터베이스에 위임
+> - IDENTITY는 데이터베이스에 위임하기 때문에 데이터베이스에 저장해야 할 때까지 기본 키 값을 알 수 없다.
+> - IDENTITY 전략은 데이터베이스에 INSERT SQL을 실행한 후에 ID 값을 알 수 있다.(em.persist() 호출 시점에 즉시 INSERT SQL 실행하고 ID 값을 알 수 있다.)
+> - 주로 MySQL, PostgreSQL, SQL Server, DB2에서 사용
+> - JPA는 보통 트랜잭션 커밋 시점에 INSERT SQL을 실행
+>   - AUTO_INCREMENT는 데이터베이스에 INSERT SQL을 실행한 이후에 ID 값을 알 수 있다. 
+
+
+```java
+@Entity
+public class Member {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  
+  private String name;
+  
+  public Member() {
+  }
+}
+```
+
+<br>
+
+
