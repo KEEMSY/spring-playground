@@ -413,4 +413,41 @@ public class Member {
 
 <br>
 
+> SEQUENCE 전략
+> - 데이터베이스 시퀀스는 유일한 값을 순서대로 생성하는 특별한 데이터베이스 오브젝트이다.(ex. 오라클 시퀀스)
+> - 데이터베이스 시퀀스는 유일성이 보장되어야 하며, 동시에 여러 트랜잭션에서 값을 가져가더라도 값이 순서대로 생성되어야 한다.
+> - 데이터베이스 시퀀스는 성능, 확장성, 동시성 측면에서 최적화되어 있다.
+>   - 시퀀스는 성능을 최적화하기 위해 캐싱을 사용할 수 있다. 예를 들어, 오라클 시퀀스는 기본적으로 20개의 값을 캐싱한다. 이는 성능을 향상시키지만, 시스템 충돌 시 캐시된 값이 손실될 수 있습니다. 
+>   - 여러 트랜잭션이 동시에 시퀀스 값을 요청하더라도, 데이터베이스는 이를 효율적으로 처리할 수 있습니다.
+> - SEQUENCE 전략은 데이터베이스 시퀀스를 사용해서 기본 키를 할당한다.
+> - @SequenceGenerator를 사용해서 매핑한다.
+> - 주로 오라클, PostgreSQL, DB2, H2 데이터베이스에서 사용한다.
 
+| 속성 | 설명                                                                                   | 기본값                |
+|---|--------------------------------------------------------------------------------------|--------------------|
+| name | 식별자 생성기 이름                                                                           | 필수                 |
+| sequenceName | 데이터베이스에 등록되어 있는 시퀀스 이름                                                               | hibernate_sequence |
+| initialValue | DDL 생성 시에만 사용되며, 시퀀스 DDL을 생성할 때 처음 시작하는 수를 지정한다.                                     | 1                  |
+| allocationSize | 시퀀스 한 번 호출에 증가하는 수(성능 최적화에 사용되며, 데이터베이스 시퀀스 값이 하나씩 증가하도록 설정되어 있으면 이 값을 반드시 1로 설정한다.) | 50(주의)             |
+| catalog, schema | 데이터베이스 catalog, schema 이름                                                            |
+
+```java
+@Entity
+@SequenceGenerator(
+  name = "MEMBER_SEQ_GENERATOR",
+  sequenceName = "MEMBER_SEQ", // 매핑할 데이터베이스 시퀀스 이름
+  initialValue = 1, allocationSize = 1
+)
+public class Member {
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MEMBER_SEQ_GENERATOR")
+  private Long id;
+  
+  private String name;
+  
+  public Member() {가
+  }
+}
+```
+
+<br>
