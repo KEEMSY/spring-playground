@@ -17,7 +17,10 @@ class MemberService (
     @Transactional
     fun signUp(memberDtoRequest: MemberDtoRequest): Member {
         // 1. 회원 가입 아이디 중복 체크
-        var member = memberRepository.findByLoginId(memberDtoRequest.loginId) ?: fail("이미 사용중인 아이디 입니다.")
+        var member = memberRepository.findByLoginId(memberDtoRequest.loginId)
+        if (member != null) {
+            fail("이미 가입된 아이디 입니다.")
+        }
 
         // 2. 회원 가입
         member = Member(
@@ -30,8 +33,6 @@ class MemberService (
             email = memberDtoRequest.email,
         )
 
-        memberRepository.save(member)
-
-        return member
+        return memberRepository.save(member)
     }
 }
