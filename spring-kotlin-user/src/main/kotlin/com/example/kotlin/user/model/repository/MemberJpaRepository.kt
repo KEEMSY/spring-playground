@@ -1,5 +1,6 @@
-package com.example.kotlin.user.model
+package com.example.kotlin.user.model.repository
 
+import com.example.kotlin.user.model.entity.MemberEntity
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface MemberJpaRepository: JpaRepository<MemberEntity, Long>{

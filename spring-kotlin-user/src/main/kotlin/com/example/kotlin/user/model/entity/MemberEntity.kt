@@ -1,4 +1,4 @@
-package com.example.kotlin.user.model
+package com.example.kotlin.user.model.entity
 
 import com.example.kotlin.user.common.status.Gender
 import jakarta.persistence.*
