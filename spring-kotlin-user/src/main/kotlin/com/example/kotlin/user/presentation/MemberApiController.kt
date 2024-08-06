@@ -2,6 +2,7 @@ package com.example.kotlin.user.presentation
 
 import com.example.kotlin.user.business.MemberService
 import com.example.kotlin.user.business.domain.Member
+import com.example.kotlin.user.common.util.toDtoResponse
 import com.example.kotlin.user.dto.MemberDtoRequest
 import com.example.kotlin.user.dto.MemberDtoResponse
 import jakarta.validation.Valid
@@ -22,13 +23,6 @@ class MemberApiController(
     @PostMapping("/sign-up")
     fun signUp(@RequestBody @Valid memberDtoRequest: MemberDtoRequest): MemberDtoResponse {
         val member: Member =  memberService.signUp(memberDtoRequest=memberDtoRequest)
-        return MemberDtoResponse(
-            id = member.id!!,
-            loginId = member.loginId,
-            name = member.name,
-            birthDate = member.birthDate,
-            gender = member.gender,
-            email = member.email,
-        )
+        return member.toDtoResponse()
     }
 }

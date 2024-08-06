@@ -3,6 +3,7 @@ package com.example.kotlin.user.business
 import com.example.kotlin.user.business.domain.Member
 import com.example.kotlin.user.business.port.MemberRepository
 import com.example.kotlin.user.common.exception.fail
+import com.example.kotlin.user.common.util.toDomain
 import com.example.kotlin.user.dto.MemberDtoRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -23,16 +24,7 @@ class MemberService (
         }
 
         // 2. 회원 가입
-        member = Member(
-            id = null,
-            loginId = memberDtoRequest.loginId,
-            password = memberDtoRequest.password,
-            name = memberDtoRequest.name,
-            birthDate = memberDtoRequest.birthDate,
-            gender = memberDtoRequest.gender,
-            email = memberDtoRequest.email,
-        )
-
+        member = memberDtoRequest.toDomain()
         return memberRepository.save(member)
     }
 }
