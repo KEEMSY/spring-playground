@@ -445,9 +445,70 @@ public class Member {
   
   private String name;
   
-  public Member() {가
+  public Member() {
   }
 }
 ```
 
 <br>
+
+> TABLE 전략
+> - 테이블 전략은 별도의 테이블을 사용하여 유일한 식별자를 생성한다. 
+> - 이 테이블은 주로 sequence 또는 id와 같은 이름을 가지며, 다음에 사용할 ID 값을 저장한다. 
+> - 테이블 전략은 데이터베이스 독립적입니다. 즉, 모든 데이터베이스에서 사용할 수 있다. 
+> - 성능은 시퀀스 전략에 비해 다소 떨어질 수 있습니다. 특히, 동시성 문제가 발생할 수 있다.
+> - 키 생성 전용 테이블을 하나 만들어서 데이터베이스 시퀀스를 흉내내는 전략이라고 말할 수 있다.
+> - 장점
+>   - 데이터베이스에 의존하지 않고, JPA가 모든 데이터베이스에서 사용할 수 있다.(모든 데이터베이스에 적용할 수 있다., 데이터베이스에 독립적이다.)
+>   - 데이터베이스 시퀀스를 지원하지 않는 데이터베이스에서도 사용할 수 있다.
+> - 단점
+>   - 성능이 느리다.(테이블을 매번 업데이트 해야하므로, 트랜잭션이 많을 경우 성능 저하가 발생할 수 있다.)
+>   - 동시성 문제가 발생할 수 있다.
+
+| 속성 | 설명                                                                                                                                                       | 기본값                |
+|---|----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
+| name | 식별자 생성기 이름(다른 엔터티와 구분하기 위해 사용)                                                                                                                           | 필수                 |
+| table | 키 생성 테이블명                                                                                                                                                | hibernate_sequence |
+| pkColumnName | 시퀀스 컬럼명(테이블에서 기본 키로 사용할 컬럼 이름)                                                                                                                           | sequence_name       |
+| valueColumnName | 시퀀스 값 컬럼명(다음 ID 값을 저장할 컬럼 이름)                                                                                                                            | next_val            |
+| pkColumnValue | 키로 사용할 값의 이름(생성기가 사용할 기본 키 값)                                                                                                                            | 엔티티 이름           |
+| initialValue | 초기 값(마지막으로 생성된 값이 기준이 된다.)                                                                                                                               | 1                   |
+| allocationSize | 시퀀스 한 번 호출에 증가하는 수(ID 값을 증가시키는 단위. 기본값은 50, 성능 최적화에 사용되며, 데이터베이스 시퀀스 값이 하나씩 증가하도록 설정되어 있으면 이 값을 반드시 1로 설정한다. 1로 설정 시, 매번 새로운 ID값을 생성할 때마다 테이블을 업데이트 한다.) | 50(주의)             |
+| catalog, schema | 데이터베이스 catalog, schema 이름                                                                                                                                |
+| uniqueConstraints | 유니크 제약 조건                                                                                                                                                |
+
+```sql
+CREATE TABLE MY_SEQUENCES (
+    sequence_name VARCHAR(255) NOT NULL,
+    next_val BIGINT,
+    PRIMARY KEY (sequence_name)
+);
+
+```
+
+```java
+import jakarta.persistence.*;
+
+@Entity
+@TableGenerator(
+        name = "MEMBER_SEQ_GENERATOR",
+        table = "MY_SEQUENCES",
+        pkColumnName = "sequence_name",
+        valueColumnName = "next_val",
+        pkColumnValue = "MEMBER_SEQ",
+        allocationSize = 1
+)
+public class Member {
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "MEMBER_SEQ_GENERATOR")
+    private Long id;
+
+    private String name;
+
+    public Member() {
+    }
+
+    // getters and setters
+}
+
+```
