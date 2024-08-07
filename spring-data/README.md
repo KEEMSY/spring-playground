@@ -386,6 +386,36 @@ public class Member {
     - @TableGenerator 필요
   - AUTO: 자동 선택(기본값)
 
+> **권장되는 식별자 전략**
+> - 기본 키 제약 조건: not null, 유일해야 하며, 변하면 안된다.
+> - 미래까지 이 조건을 만족하는 자연키는 찾기 어렵다. 대리키(대체키)를 사용하자.
+> - 예를 들어 주민등록번호도 기본 키로 적합하지 않다.
+> - 권장: Long형 + 대체키(시퀀스, UUID, ...)
+> - UUID 보다는 Long형 + 시퀀스를 사용하자.
+> - UUID: 성능이 좋지 않다. 주민등록번호와 같은 비즈니스 키를 그대로 사용하면 안된다.
+
+```java
+import jakarta.persistence.*;
+
+@Entity
+@SequenceGenerator(
+  name = "MEMBER_SEQ_GENERATOR",
+  sequenceName = "MEMBER_SEQ",
+  initialValue = 1, allocationSize = 1
+)
+public class Member {
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MEMBER_SEQ_GENERATOR")
+  private Long id;
+  
+  private String name;
+  
+  public Member() {
+  }
+}
+
+```
+
 <br>
 
 > IDENTITY 전략
