@@ -43,6 +43,9 @@ spring:
       username: sykeemTest
       password: 1234
 
+jwt:
+  secret: TEMPDadFufN4Oui8Bfv3ScFj6R9fyJ9hD45E6AGFsXgFsRhT4YSdSb
+
 springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
