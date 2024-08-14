@@ -27,6 +27,7 @@ fun MemberEntity.toDomain(): Member {
         birthDate = this.birthDate,
         gender = this.gender,
         email = this.email,
+        roles = this.roles?.map { it.role } ?: emptyList()
     )
 }
 

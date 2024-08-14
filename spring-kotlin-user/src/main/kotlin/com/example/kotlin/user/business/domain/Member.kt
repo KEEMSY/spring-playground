@@ -1,6 +1,7 @@
 package com.example.kotlin.user.business.domain
 
 import com.example.kotlin.user.common.status.Gender
+import com.example.kotlin.user.common.status.ROLE
 import java.time.LocalDate
 
 data class Member (
@@ -11,4 +12,5 @@ data class Member (
     val birthDate: LocalDate,
     val gender: Gender,
     val email: String,
+    val roles: List<ROLE>? = null
 )

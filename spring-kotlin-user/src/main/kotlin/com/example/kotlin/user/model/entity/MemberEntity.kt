@@ -28,4 +28,7 @@ class MemberEntity (
 
     @Column(nullable = false, length = 30)
     val email: String,
-)
+) {
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "member")
+    val roles: List<MemberEntityRole>? = null
+}
