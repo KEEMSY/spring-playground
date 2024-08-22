@@ -4,6 +4,7 @@ import com.example.kotlin.user.business.domain.Member
 import com.example.kotlin.user.business.port.MemberRepository
 import com.example.kotlin.user.common.authority.JwtTokenProvider
 import com.example.kotlin.user.common.authority.TokenInfo
+import com.example.kotlin.user.common.exception.InvalidInputException
 import com.example.kotlin.user.common.exception.fail
 import com.example.kotlin.user.common.util.toDomain
 import com.example.kotlin.user.dto.LoginDto
@@ -45,6 +46,14 @@ class MemberService (
         val authentication =
             authenticationManagerBuilder.`object`.authenticate(authenticationToken)
         return jwtTokenProvider.createToken(authentication)
+    }
+
+    /**
+     * 내 정보 조회
+     */
+    fun searchMyInfo(id: Long): Member {
+        return memberRepository.findById(id)
+            ?: throw InvalidInputException("회원 정보를 찾을 수 없습니다.: $id")
     }
 
 }
