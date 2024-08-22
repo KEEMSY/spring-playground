@@ -18,12 +18,19 @@ class MemberRepositoryAdapter(
     private val memberRoleJpaRepository: MemberRoleJpaRepository
 ): MemberRepository {
     override fun findByLoginId(loginId: String): Member? {
-        val memberEntity: MemberEntity? =  memberJpaRepository.findByLoginId(loginId)
+        val memberEntity: MemberEntity? = memberJpaRepository.findByLoginId(loginId)
         return memberEntity?.toDomain()
 
     }
 
-    @Transactional()
+
+    @Transactional(readOnly = true)
+    override fun findById(id: Long): Member? {
+        val memberEntity: MemberEntity? = memberJpaRepository.findById(id).orElse(null)
+        return memberEntity?.toDomain()
+    }
+
+    @Transactional
     override fun save(member: Member): Member {
         // 사용자 정보 저장
         val memberEntity = member.toEntity()
@@ -31,7 +38,7 @@ class MemberRepositoryAdapter(
 
         // 권한 저장
         val memberEntityRole = MemberEntityRole(
-            id= null,
+            id = null,
             member = savedMemberEntity,
             role = ROLE.MEMBER
         )

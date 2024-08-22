@@ -6,5 +6,6 @@ import org.springframework.stereotype.Component
 @Component
 interface MemberRepository {
     fun findByLoginId(loginId: String): Member?
+    fun findById(id: Long): Member?
     fun save(member: Member): Member
 }
