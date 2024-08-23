@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -49,6 +50,15 @@ class SecurityConfig(
             )
         return http.build()
     }
+
+    @Bean
+    fun webSecurityCustomizer(): WebSecurityCustomizer {
+        return WebSecurityCustomizer { web ->
+            web.ignoring()
+                .requestMatchers("/js/**", "/css/**", "/images/**") // 정적 리소스 ignore 설정
+        }
+    }
+
     @Bean
     fun passwordEncoder(): PasswordEncoder =
         PasswordEncoderFactories.createDelegatingPasswordEncoder()
