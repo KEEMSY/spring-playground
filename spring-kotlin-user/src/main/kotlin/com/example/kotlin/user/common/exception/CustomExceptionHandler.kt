@@ -9,6 +9,8 @@ import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.web.servlet.resource.NoResourceFoundException
 
 @RestControllerAdvice
 class CustomExceptionHandler {
@@ -57,18 +59,41 @@ class CustomExceptionHandler {
             ), HttpStatus.BAD_REQUEST
         )
     }
+    @ExceptionHandler(NoResourceFoundException::class)
+    fun handleNoHandlerFoundException(ex: NoResourceFoundException): ResponseEntity<BaseResponse<Map<String, String>>> {
+        val errors = mapOf("error" to "Requested resource not found: ${ex.resourcePath}")
+        return ResponseEntity(
+            BaseResponse(
+                ResultCode.NOT_FOUND.name,
+                errors,
+                "요청한 리소스를 찾을 수 없습니다."
+            ), HttpStatus.NOT_FOUND
+        )
+    }
 
+    @ExceptionHandler(AccessDeniedException::class)
+    protected fun handleAccessDeniedException(ex: AccessDeniedException):
+            ResponseEntity<BaseResponse<Map<String, String>>> {
+        val errors = mapOf("error" to "Access Denied")
+        return ResponseEntity(
+            BaseResponse(
+                ResultCode.FORBIDDEN.name,
+                errors,
+                "접근 권한이 없습니다."
+            ), HttpStatus.FORBIDDEN
+        )
+    }
 
     @ExceptionHandler(Exception::class)
     protected fun defaultException(ex: Exception):
             ResponseEntity<BaseResponse<Map<String, String>>> {
-        // 그 외 예외 처리
+        // 예상하지 못한 예외 처리
         val errors = mapOf(" " to (ex.message ?: "Raise UnExpected Exception"))
         return ResponseEntity(
             BaseResponse(
                 ResultCode.ERROR.name,
                 errors,
-                ResultCode.ERROR.msg
+                ResultCode.ERROR.msg + ": ${ex}"
             ), HttpStatus.BAD_REQUEST
         )
     }
