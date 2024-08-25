@@ -1,10 +1,9 @@
 package com.example.kotlin.user.common.service
 
-import com.example.kotlin.user.model.adpter.MemberRepositoryAdapter
+import com.example.kotlin.user.common.dto.CustomUser
 import com.example.kotlin.user.model.entity.MemberEntity
 import com.example.kotlin.user.model.repository.MemberJpaRepository
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -22,7 +21,8 @@ class CustomUserDetailsService(
             ?: throw UsernameNotFoundException(" .")
 
     private fun createUserDetails(memberEntity: MemberEntity): UserDetails =
-        User(
+        CustomUser(
+            memberEntity.id!!,
             memberEntity.loginId,
             passwordEncoder.encode(memberEntity.password),
             memberEntity.roles!!.map { SimpleGrantedAuthority("ROLE_${it.role}") }
