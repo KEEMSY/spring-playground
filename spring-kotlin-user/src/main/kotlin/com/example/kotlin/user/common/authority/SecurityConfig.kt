@@ -10,12 +10,13 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.access.AccessDeniedException
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val jwtTokenProvider: JwtTokenProvider ){
-    @Bean
+    private val jwtTokenProvider: JwtTokenProvider
+) {
     /*
     * SecurityFilterChain
     * - httpBasic { it.disable() } : basic auth 끄기(HTTP Basic 인증을 비활성화)
@@ -32,7 +33,15 @@ class SecurityConfig(
     * - rememberMe(): Remember-me기능으로 로그인한 사용자일 경우
     * - authenticated(): Anonymous 사용자가 아닌 경우(인증을 한 사용자)
     * - fullyAuthenticated(): Anonymous 사용자가 아니고  Remember-me 기능으로 로그인을 하지 않은 사용자일 경우
+    *
+    * [ 잎으로 작업해야 할 사항 ]
+    *  Swagger 는 관리자(혹은 개발자)만 접근 가능하도록 권한을 수정 할 것
+    *  실제 프로덕션 환경에서는 보안 요구사항에 따라 더 세밀한 접근 제어가 필요함
+    *  - 특정 관리자 기능에 대한 추가적인 인증 요구
+    *  - API 버전별 다른 인증 정책 적용
+    *  - 역할 기반 접근 제어(RBAC) 구현
      */
+    @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .httpBasic { it.disable() }
@@ -41,8 +50,14 @@ class SecurityConfig(
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .authorizeHttpRequests {
-                it.requestMatchers("/api/member/signup").anonymous()
-                    .anyRequest().permitAll()
+                it.requestMatchers("/api/members/**")
+                    .authenticated()
+                it.anyRequest().permitAll()
+            }
+            .exceptionHandling {
+                it.authenticationEntryPoint { request, response, authException ->
+                    throw AccessDeniedException("Authentication failed")
+                }
             }
             .addFilterBefore(
                 JwtAuthenticationFilter(jwtTokenProvider),
