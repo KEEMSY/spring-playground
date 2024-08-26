@@ -1,6 +1,7 @@
 package com.example.kotlin.user.common.authority
 
 
+import com.example.kotlin.user.common.dto.CustomUser
 import io.jsonwebtoken.*
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
@@ -9,7 +10,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import java.util.*
@@ -25,17 +25,20 @@ class JwtTokenProvider {
     }
 
     /**
-     * token */
+     * token 생성
+     */
     fun createToken(authentication: Authentication): TokenInfo {
         val authorities: String = authentication
             .authorities
             .joinToString(",", transform = GrantedAuthority::getAuthority)
         val now = Date()
         val accessExpiration = Date(now.time + EXPIRATION_MILLISECONDS)
+
         // Access Token
         val accessToken = Jwts.builder()
             .setSubject(authentication.name)
             .claim("auth", authorities)
+            .claim("userId", (authentication.principal as CustomUser).userId)
             .setIssuedAt(now)
             .setExpiration(accessExpiration)
             .signWith(key, SignatureAlgorithm.HS256)
@@ -44,20 +47,28 @@ class JwtTokenProvider {
     }
 
     /**
-     * token */
+     * token 정보 추출
+     */
     fun getAuthentication(token: String): Authentication {
         val claims: Claims = getClaims(token)
-        val auth = claims["auth"] ?: throw RuntimeException(" .")
-        //
+        val auth = claims["auth"] ?: throw RuntimeException("잘못된 토큰 입니다.")
+
+        // userId 추출(추가 속성 추출)
+        val userId = claims["userId"] ?: throw RuntimeException("userId가 존재하지 않습니다..")
+
+        // 권한 정보 추출
         val authorities: Collection<GrantedAuthority> = (auth as String)
             .split(",")
             .map { SimpleGrantedAuthority(it) }
-        val principal: UserDetails = User(claims.subject, "", authorities)
+
+        val principal: UserDetails =
+            CustomUser(userId.toString().toLong(), claims.subject, "", authorities)
         return UsernamePasswordAuthenticationToken(principal, "", authorities)
     }
 
     /**
-     * Token */
+     * token 검증
+     * */
     fun validateToken(token: String): Boolean {
         try {
             getClaims(token)
