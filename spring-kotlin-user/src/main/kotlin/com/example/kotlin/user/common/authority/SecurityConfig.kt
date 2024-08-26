@@ -50,8 +50,7 @@ class SecurityConfig(
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .authorizeHttpRequests {
-                it.requestMatchers("/api/members/**")
-                    .authenticated()
+                it.requestMatchers("/api/members/info/**").authenticated()
                 it.anyRequest().permitAll()
             }
             .exceptionHandling {
