@@ -15,11 +15,11 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class MemberService (
+class MemberService(
     private val memberRepository: MemberRepository,
     private val authenticationManagerBuilder: AuthenticationManagerBuilder,
     private val jwtTokenProvider: JwtTokenProvider,
-){
+) {
     /**
      * 회원 가입
      */
@@ -54,6 +54,26 @@ class MemberService (
     fun searchMyInfo(id: Long): Member {
         return memberRepository.findById(id)
             ?: throw InvalidInputException("회원 정보를 찾을 수 없습니다.: $id")
+    }
+
+    /**
+     * 내 정보 수정
+     */
+    @Transactional
+    fun modifyMyInfo(memberDtoRequest: MemberDtoRequest): Member {
+        val member = memberRepository.findById(memberDtoRequest.id!!)
+            ?: throw InvalidInputException("회원 정보를 찾을 수 없습니다.: ${memberDtoRequest.id}")
+
+        val updatedMember = member.copy(
+            loginId = memberDtoRequest.loginId ?: member.loginId,
+            password = memberDtoRequest.password ?: member.password,
+            name = memberDtoRequest.name ?: member.name,
+            birthDate = memberDtoRequest.birthDate ?: member.birthDate,
+            gender = memberDtoRequest.gender ?: member.gender,
+            email = memberDtoRequest.email ?: member.email,
+        )
+
+        return memberRepository.save(updatedMember)
     }
 
 }
