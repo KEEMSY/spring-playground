@@ -90,4 +90,20 @@ class MemberApiController(
 
         return BaseResponse(data = member.toDtoResponse())
     }
+
+    /**
+     * 회원 정보 수정하기
+     */
+    @PutMapping("/info")
+    fun modifyMyInfo(@RequestBody @Valid memberDtoRequest: MemberDtoRequest): BaseResponse<MemberDtoResponse> {
+        val userId = (SecurityContextHolder
+            .getContext()
+            .authentication
+            .principal as CustomUser)
+            .userId
+        memberDtoRequest.id = userId
+        val member = memberService.modifyMyInfo(memberDtoRequest)
+        return BaseResponse(data = member.toDtoResponse())
+    }
 }
+
