@@ -27,27 +27,33 @@ public class User {
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserRole role;
-    
-    private Long kakaoId;
+
+    @Column(name = "social_id")
+    private String socialId;
+
+    @Column(name = "social_provider")
+    @Enumerated(EnumType.STRING)
+    private SocialProvider socialProvider;
 
     public User(String username, String password, String email, UserRole role) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
-
     }
 
-    public User(String username, String password, String email, UserRole role, Long kakaoId) {
+    public User(String username, String password, String email, UserRole role, String socialId, SocialProvider socialProvider) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
-        this.kakaoId =kakaoId;
+        this.socialId = socialId;
+        this.socialProvider = socialProvider;
     }
 
-    public User kakaoIdUpdate(Long kakaoId) {
-        this.kakaoId = kakaoId;
+    public User updateSocialInfo(String socialId, SocialProvider socialProvider) {
+        this.socialId = socialId;
+        this.socialProvider = socialProvider;
         return this;
     }
 }
