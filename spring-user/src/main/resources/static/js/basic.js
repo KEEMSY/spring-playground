@@ -13,7 +13,7 @@ $(document).ready(function () {
     }
     $.ajax({
         type: 'GET',
-        url: `/api/user-info`,
+        url: `/api/user/user-info`,
         contentType: 'application/json',
     }).done(function(data, textStatus, jqXHR, ) {
         const username = data.username;

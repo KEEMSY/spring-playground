@@ -2,10 +2,11 @@ package com.example.springuser.controller.user;
 
 import com.example.springuser.dto.SignupRequest;
 import com.example.springuser.dto.UserInfoDto;
+import com.example.springuser.entity.SocialProvider;
 import com.example.springuser.entity.UserRole;
 import com.example.springuser.jwt.JwtUtil;
 import com.example.springuser.security.UserDetailsImpl;
-import com.example.springuser.service.KakaoService;
+import com.example.springuser.service.SocialLoginService;
 import com.example.springuser.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.Cookie;
@@ -22,28 +23,30 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
-    private final KakaoService kakaoService;
 
-    public UserController(UserService userService, KakaoService kakaoService) {
+    private final SocialLoginService socialLoginService;
+
+
+    public UserController(UserService userService, SocialLoginService socialLoginService) {
         this.userService = userService;
-        this.kakaoService = kakaoService;
+        this.socialLoginService = socialLoginService;
     }
 
-    @GetMapping("/user/login-page")
+    @GetMapping("/login-page")
     public String loginPage() {
         return "login";
     }
 
-    @GetMapping("/user/signup")
+    @GetMapping("/signup")
     public String signupPage() {
         return "signup";
     }
 
-    @PostMapping("/user/signup")
+    @PostMapping("/signup")
     public String signup(@Valid SignupRequest request, BindingResult bindingResult) {
         // Validation 예외처리
         List<FieldError> errors = bindingResult.getFieldErrors();
@@ -69,13 +72,18 @@ public class UserController {
         return new UserInfoDto(username, isAdmin);
     }
 
-    @GetMapping("/user/kakao/callback")
-    public String kakaoCallback(@RequestParam String code, HttpServletResponse res) throws JsonProcessingException {
-        log.info("code = {}", code);
-        String token = kakaoService.kakaoLogin(code);
-        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, token.substring(7)); // Bearer 띄어쓰기를 맞추기 위함
+    @GetMapping("/{provider}/callback")
+    public String socialLoginCallback(@PathVariable String provider,
+                                      @RequestParam String code,
+                                      HttpServletResponse response) throws JsonProcessingException {
+        log.info("Social login callback - provider: {}, code: {}", provider, code);
+
+        SocialProvider socialProvider = SocialProvider.valueOf(provider.toUpperCase());
+        String token = socialLoginService.socialLogin(code, socialProvider);
+
+        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, token.substring(7));
         cookie.setPath("/");
-        res.addCookie(cookie);
+        response.addCookie(cookie);
 
         return "redirect:/";
     }
