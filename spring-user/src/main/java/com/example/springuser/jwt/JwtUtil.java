@@ -52,7 +52,7 @@ public class JwtUtil {
     public String createToken(String username, UserRole role) {
         Date date = new Date();
 
-        return BEARER_PREFIX +
+        return  BEARER_PREFIX + //
                 Jwts.builder()
                         .setSubject(username) // 사용자 식별자값(ID) <- PK 값을 사용해도 좋음
                         .claim(AUTHORIZATION_KEY, role) // 사용자 권한
@@ -65,17 +65,24 @@ public class JwtUtil {
     // JWT Cookie 에 저장
     public void addJwtToCookie(String token, HttpServletResponse res) {
         try {
-            token = URLEncoder.encode(token, "utf-8").replaceAll("\\+", "%20"); // Cookie Value 에는 공백이 불가능해서 encoding 진행
+            // JWT 토큰을 URL 인코딩하여 공백 및 특수 문자를 처리
+            token = URLEncoder.encode(token, "utf-8").replaceAll("\\+", "%20");
 
-            Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token); // Name-Value
+            // 쿠키 생성
+            Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token);
             cookie.setPath("/");
+            cookie.setHttpOnly(true);  // XSS 공격 방지
+            cookie.setSecure(true);    // HTTPS에서만 전송
+            cookie.setMaxAge(3600);    // 쿠키 유효 기간 설정 (예: 1시간)
 
-            // Response 객체에 Cookie 추가
+            // Response 객체에 쿠키 추가
             res.addCookie(cookie);
         } catch (UnsupportedEncodingException e) {
+            // 인코딩 예외 처리
             logger.error(e.getMessage());
         }
     }
+
 
     // JWT 토큰 substring, token 값만 가져옴
     public String substringToken(String tokenValue) {
@@ -120,7 +127,7 @@ public class JwtUtil {
     // HttpServletRequest 에서 Cookie Value : JWT 가져오기 | 권한 정보 가져옴
     public String getTokenFromRequest(HttpServletRequest req) {
         Cookie[] cookies = req.getCookies();
-        if(cookies != null) {
+        if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(AUTHORIZATION_HEADER)) {
                     try {
@@ -133,4 +140,5 @@ public class JwtUtil {
         }
         return null;
     }
+
 }
