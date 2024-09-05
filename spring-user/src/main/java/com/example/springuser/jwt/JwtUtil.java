@@ -52,14 +52,18 @@ public class JwtUtil {
     public String createToken(String username, UserRole role) {
         Date date = new Date();
 
-        return  BEARER_PREFIX + //
-                Jwts.builder()
-                        .setSubject(username) // 사용자 식별자값(ID) <- PK 값을 사용해도 좋음
-                        .claim(AUTHORIZATION_KEY, role) // 사용자 권한
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
-                        .setIssuedAt(date) // 발급일
-                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-                        .compact();
+        String token = Jwts.builder()
+                .setSubject(username) // 사용자 식별자값(ID) <- PK 값을 사용해도 좋음
+                .claim(AUTHORIZATION_KEY, role) // 사용자 권한
+                .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
+                .setIssuedAt(date) // 발급일
+                .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                .compact();
+        logger.info("create!! Token: " + token);
+        // 24.09.05 기록: BEARER_PREFIX 는 필요 없는 것으로 판단됨(해당 로직에 추가 시 에러가 발생함, 혹은 해당 BEARER_PREFIX를 사용하고, 요청시 마다 BEARER_PREFIX을 추가하지 않는 경우에도 에러가 발생 하였음
+        // 이로 인해 해당 코드를 주석처리 진행함
+        return   // BEARER_PREFIX +
+                token;
     }
 
     // JWT Cookie 에 저장
@@ -93,12 +97,25 @@ public class JwtUtil {
         throw new NullPointerException("Not Found Token");
     }
 
-    // header 에서 JWT 가져오기
+    // header 및 쿠키에서 JWT 가져오기
+    // 기록용: JWT를 가져오는 로직에서 원래 헤더와 쿠키를 모두 확인하는 것이 맞는지는 확인이 필요함
+    // (24.09.05 "쿠키에서 토큰 추출"은, 페이지 렌더링을 하는 과정에서 쿠키에서 토큰을 가져오지 못하는 경우를 식별하여 조치한 사항임)
     public String getJwtFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }
+
+        // 쿠키에서 토큰 추출
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("Authorization".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+
         return null;
     }
 
