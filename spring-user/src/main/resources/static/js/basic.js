@@ -5,7 +5,7 @@ $(document).ready(function () {
 
     if (auth !== undefined && auth !== '') {
         $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
-            jqXHR.setRequestHeader('Authorization', auth);
+            jqXHR.setRequestHeader('Authorization', "Bearer " + auth);
         });
     } else {
         window.location.href = host + '/api/user/login-page';
