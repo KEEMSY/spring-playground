@@ -81,7 +81,7 @@ public class UserController {
         SocialProvider socialProvider = SocialProvider.valueOf(provider.toUpperCase());
         String token = socialLoginService.socialLogin(code, socialProvider);
 
-        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, token.substring(7));
+        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, token);
         cookie.setPath("/");
         response.addCookie(cookie);
 
