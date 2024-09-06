@@ -16,8 +16,11 @@
 <body>
 <div id="login-form">
   <div id="login-title">Log into Select Shop</div>
-  <button id="login-kakao-btn" onclick="location.href='https://kauth.kakao.com/oauth/authorize?client_id=24d264059e6e314565e2409ca90da734&redirect_uri=http://localhost:9090/api/user/kakao/callback&response_type=code'">
+  <button id="login-kakao-btn" onclick="doSocialLogin('kakao')">
     카카오로 로그인하기
+  </button>
+  <button id="login-google-btn" onclick="doSocialLogin('google')" class="google-btn">
+    Google로 로그인
   </button>
   <button id="login-id-btn" onclick="location.href='/api/user/signup'">
     회원 가입하기
@@ -74,6 +77,28 @@
               alert("Login Fail");
               window.location.href = host + '/api/user/login-page?error'
             });
+  }
+
+  function doSocialLogin(provider) {
+    let clientId, redirectUri, url;
+
+    switch(provider) {
+      case 'kakao':
+        clientId = '24d264059e6e314565e2409ca90da734';
+        redirectUri = 'http://localhost:9090/api/user/kakao/callback';
+        url = 'https://kauth.kakao.com/oauth/authorize?client_id=' + clientId + '&redirect_uri=' + redirectUri + '&response_type=code';
+        break;
+      case 'google':
+        clientId = '1082114513874-cog3jr6vohjmdu3k0sqsfh3cclgmknge.apps.googleusercontent.com';
+        redirectUri = 'http://localhost:9090/api/user/google/callback';
+        url = 'https://accounts.google.com/o/oauth2/v2/auth?client_id=' + clientId + '&redirect_uri=' + redirectUri + '&response_type=code&scope=email profile';
+        break;
+      default:
+        console.error('Unsupported provider:', provider);
+        return;
+    }
+
+    window.location.href = url;
   }
 </script>
 </html>

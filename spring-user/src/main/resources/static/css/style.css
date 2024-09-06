@@ -84,6 +84,41 @@ body {
     color: #414141;
 }
 
+#login-google-btn {
+    width: 393px;
+    height: 62px;
+    margin: 8px 0;
+    padding: 0;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Roboto', 'SpoqaHanSansNeo', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: #3c4043;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+#login-google-btn:hover {
+    background-color: #f7f8f8;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+}
+
+#login-google-btn:active {
+    background-color: #e8e8e9;
+}
+
+#login-google-btn .google-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg') no-repeat center;
+    background-size: contain;
+}
 #login-id-btn {
     width: 393px;
     height: 62px;
