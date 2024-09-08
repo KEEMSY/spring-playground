@@ -42,11 +42,15 @@ public class SocialLoginService {
     }
 
     private String getToken(String code, SocialProvider provider) throws JsonProcessingException {
+        /*
+         TODO
+         - 각 Provider 별 secrete 과 client_id의 보안 문제를 개선할 것
+         */
         URI uri;
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
 
         switch (provider) {
-            case KAKAO:
+            case KAKAO -> {
                 uri = UriComponentsBuilder
                         .fromUriString("https://kauth.kakao.com")
                         .path("/oauth/token")
@@ -54,13 +58,37 @@ public class SocialLoginService {
                         .build()
                         .toUri();
                 body.add("grant_type", "authorization_code");
-                body.add("client_id", "24d264059e6e314565e2409ca90da734"); // 해당 부분 수정 필요(카카오 API 키)
+                body.add("client_id", "24d264059e6e314565e2409ca90da734");
                 body.add("redirect_uri", "http://localhost:9090/api/user/kakao/callback");
                 body.add("code", code);
-                break;
-            // TODO: Add cases for NAVER, GOOGLE, APPLE
-            default:
-                throw new IllegalArgumentException("Unsupported social provider");
+            }
+            case GOOGLE -> {
+                uri = UriComponentsBuilder
+                        .fromUriString("https://oauth2.googleapis.com")
+                        .path("/token")
+                        .encode()
+                        .build()
+                        .toUri();
+                body.add("grant_type", "authorization_code");
+                body.add("client_id", "1082114513874-cog3jr6vohjmdu3k0sqsfh3cclgmknge.apps.googleusercontent.com");
+                body.add("client_secret", "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");
+                body.add("redirect_uri", "http://localhost:9090/api/user/google/callback");
+                body.add("code", code);
+            }
+            case NAVER -> {
+                uri = UriComponentsBuilder
+                        .fromUriString("https://nid.naver.com")
+                        .path("/oauth2.0/token")
+                        .encode()
+                        .build()
+                        .toUri();
+                body.add("grant_type", "authorization_code");
+                body.add("client_id", "fx0UOqH6103KvDiBcbks");
+                body.add("client_secret", "RFbURIo0VV");
+                body.add("code", code);
+                body.add("state", "YOUR_STATE_STRING");
+            }
+            default -> throw new IllegalArgumentException("Unsupported social provider");
         }
 
         HttpHeaders headers = new HttpHeaders();
@@ -83,31 +111,61 @@ public class SocialLoginService {
         headers.add("Authorization", "Bearer " + accessToken);
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
-        switch (provider) {
-            case KAKAO:
-                uri = UriComponentsBuilder
-                        .fromUriString("https://kapi.kakao.com")
-                        .path("/v2/user/me")
-                        .encode()
-                        .build()
-                        .toUri();
-                break;
-            // TODO: Add cases for NAVER, GOOGLE, APPLE
-            default:
-                throw new IllegalArgumentException("Unsupported social provider");
-        }
+        uri = switch (provider) {
+            case KAKAO -> UriComponentsBuilder
+                    .fromUriString("https://kapi.kakao.com")
+                    .path("/v2/user/me")
+                    .encode()
+                    .build()
+                    .toUri();
+            case GOOGLE -> UriComponentsBuilder
+                    .fromUriString("https://www.googleapis.com")
+                    .path("/oauth2/v2/userinfo")
+                    .encode()
+                    .build()
+                    .toUri();
+            case NAVER -> UriComponentsBuilder
+                    .fromUriString("https://openapi.naver.com")
+                    .path("/v1/nid/me")
+                    .encode()
+                    .build()
+                    .toUri();
+            default -> throw new IllegalArgumentException("Unsupported social provider");
+        };
 
-        RequestEntity<MultiValueMap<String, String>> requestEntity = RequestEntity
-                .post(uri)
+        RequestEntity<Void> requestEntity = RequestEntity
+                .get(uri)
                 .headers(headers)
-                .body(new LinkedMultiValueMap<>());
+                .build();
 
         ResponseEntity<String> response = restTemplate.exchange(requestEntity, String.class);
 
         JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
-        String id = jsonNode.get("id").asText();
-        String nickname = jsonNode.get("properties").get("nickname").asText();
-        String email = jsonNode.get("kakao_account").get("email").asText();
+        return extractUserInfo(jsonNode, provider);
+    }
+
+    private SocialUserInfoDto extractUserInfo(JsonNode jsonNode, SocialProvider provider) {
+        String id, nickname, email;
+
+        switch (provider) {
+            case KAKAO -> {
+                id = jsonNode.get("id").asText();
+                nickname = jsonNode.get("properties").get("nickname").asText();
+                email = jsonNode.get("kakao_account").get("email").asText();
+            }
+            case GOOGLE -> {
+                id = jsonNode.get("id").asText();
+                nickname = jsonNode.get("name").asText();
+                email = jsonNode.get("email").asText();
+            }
+            case NAVER -> {
+                JsonNode response = jsonNode.get("response");
+                id = response.get("id").asText();
+                nickname = response.get("nickname").asText();
+                email = response.get("email").asText();
+            }
+            default -> throw new IllegalArgumentException("Unsupported social provider");
+        }
 
         log.info("Social user info: " + id + ", " + nickname + ", " + email);
         return new SocialUserInfoDto(id, nickname, email);
