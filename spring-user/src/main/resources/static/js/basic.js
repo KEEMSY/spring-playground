@@ -5,19 +5,19 @@ $(document).ready(function () {
 
     if (auth !== undefined && auth !== '') {
         $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
-            jqXHR.setRequestHeader('Authorization', "Bearer " + auth);
+            jqXHR.setRequestHeader('Authorization', BEARER_PREFIX + auth);
         });
     } else {
         window.location.href = host + '/api/user/login-page';
         return;
-    }
+    }선
+
     $.ajax({
         type: 'GET',
         url: `/api/user/user-info`,
         contentType: 'application/json',
-    }).done(function(data, textStatus, jqXHR, ) {
+    }).done(function(data, textStatus, jqXHR) {
         const username = data.username;
-        const isAdmin = !!data.admin;
 
         if (!username) {
             window.location.href = '/api/user/login-page';
@@ -26,9 +26,13 @@ $(document).ready(function () {
         $('#username').text(username);
 
     }).fail(function(jqXHR, textStatus, errorThrown) {
-        logout();
+        if (jqXHR.status === 401) {
+            // 만료된 토큰으로 인한 실패
+            window.location.href = '/api/user/login-page';
+        } else {
+            logout();
+        }
     });
-
 });
 
 function logout() {
