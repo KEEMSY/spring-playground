@@ -5,6 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/*
+ TODO
+ - 기본적인 로그인 데이터 뿐만아니라, 고객 세분화를 하기 위한 세부 정보를 기입할 수 있도록 확장
+ */
 @Entity
 @Getter
 @Setter

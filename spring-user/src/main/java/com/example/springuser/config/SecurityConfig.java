@@ -100,7 +100,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // 정적 리소스 Ignore, 추후 이미지의 경로도 추가될 수 있음.
+    // 정적 리소스 Ignore
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
