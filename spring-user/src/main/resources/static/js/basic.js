@@ -10,7 +10,7 @@ $(document).ready(function () {
     } else {
         window.location.href = host + '/api/user/login-page';
         return;
-    }선
+    }
 
     $.ajax({
         type: 'GET',
