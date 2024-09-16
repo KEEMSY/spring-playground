@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /*
  TODO
  - 기본적인 로그인 데이터 뿐만아니라, 고객 세분화를 하기 위한 세부 정보를 기입할 수 있도록 확장
@@ -27,7 +30,16 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String email;
+    @ManyToMany
+    @JoinTable(
+            name = "user_followers",
+            joinColumns = @JoinColumn(name = "followed_id"),
+            inverseJoinColumns = @JoinColumn(name = "follower_id")
+    )
+    private Set<User> followers = new HashSet<>();
 
+    @ManyToMany(mappedBy = "followers")
+    private Set<User> following = new HashSet<>();
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserRole role;
