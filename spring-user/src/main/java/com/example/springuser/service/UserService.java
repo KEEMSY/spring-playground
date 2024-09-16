@@ -1,15 +1,16 @@
 package com.example.springuser.service;
 
-import com.example.springuser.dto.LoginRequest;
 import com.example.springuser.dto.SignupRequest;
+import com.example.springuser.dto.UserInfoDto;
 import com.example.springuser.entity.User;
 import com.example.springuser.entity.UserRole;
 import com.example.springuser.jwt.JwtUtil;
 import com.example.springuser.repository.UserRepository;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -60,5 +61,35 @@ public class UserService {
         // 사용자 등록
         User user = new User(username, password, email, role);
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void followUser(Long followerId, Long followedId) {
+        User follower = userRepository.findById(followerId).orElseThrow();
+        User followed = userRepository.findById(followedId).orElseThrow();
+        followed.getFollowers().add(follower);
+        userRepository.save(followed);
+    }
+
+    @Transactional
+    public void unfollowUser(Long followerId, Long followedId) {
+        User follower = userRepository.findById(followerId).orElseThrow();
+        User followed = userRepository.findById(followedId).orElseThrow();
+        followed.getFollowers().remove(follower);
+        userRepository.save(followed);
+    }
+    @Transactional(readOnly = true)
+    public List<UserInfoDto> getFollowers(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        return user.getFollowers().stream()
+                .map(follower -> new UserInfoDto(follower.getUsername(), follower.getRole() == UserRole.ADMIN))
+                .toList();
+    }
+    @Transactional(readOnly = true)
+    public List<UserInfoDto> getFollowing(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        return user.getFollowing().stream()
+                .map(following -> new UserInfoDto(following.getUsername(), following.getRole() == UserRole.ADMIN))
+                .toList();
     }
 }
