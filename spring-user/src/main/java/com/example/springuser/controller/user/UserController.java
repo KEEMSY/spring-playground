@@ -1,5 +1,6 @@
 package com.example.springuser.controller.user;
 
+import com.example.springuser.dto.BaseResponse;
 import com.example.springuser.dto.SignupRequest;
 import com.example.springuser.dto.UserInfoDto;
 import com.example.springuser.entity.SocialProvider;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -86,5 +88,43 @@ public class UserController {
         response.addCookie(cookie);
 
         return "redirect:/";
+    }
+
+
+    /*
+     팔로잉 기능
+    - 개선해야 하는 부분
+      - 팔로잉은 자기 자신을 할 수 없다.
+      - 팔로잉/언팔로우 는 요청자와 대상 유저의 정보가 일치해야만 가능하다.
+     */
+    @PostMapping("/{followerId}/follow/{followedId}")
+    public ResponseEntity<BaseResponse<Void>> followUser(@PathVariable Long followerId, @PathVariable Long followedId) {
+        userService.followUser(followerId, followedId);
+        BaseResponse<Void> response = new BaseResponse<>();
+        response.setMessage("Successfully followed user");
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{followerId}/unfollow/{followedId}")
+    public ResponseEntity<BaseResponse<Void>> unfollowUser(@PathVariable Long followerId, @PathVariable Long followedId) {
+        userService.unfollowUser(followerId, followedId);
+        BaseResponse<Void> response = new BaseResponse<>();
+        response.setMessage("Successfully unfollowed user");
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{userId}/followers")
+    public ResponseEntity<BaseResponse<List<UserInfoDto>>> getFollowers(@PathVariable Long userId) {
+        List<UserInfoDto> followers = userService.getFollowers(userId);
+        System.out.println();
+        System.out.println("followers = " + followers);
+        System.out.println();
+        return ResponseEntity.ok(new BaseResponse<>(followers));
+    }
+
+    @GetMapping("/{userId}/following")
+    public ResponseEntity<BaseResponse<List<UserInfoDto>>> getFollowing(@PathVariable Long userId) {
+        List<UserInfoDto> following = userService.getFollowing(userId);
+        return ResponseEntity.ok(new BaseResponse<>(following));
     }
 }
