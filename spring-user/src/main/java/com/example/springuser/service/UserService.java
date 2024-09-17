@@ -6,6 +6,7 @@ import com.example.springuser.entity.User;
 import com.example.springuser.entity.UserRole;
 import com.example.springuser.jwt.JwtUtil;
 import com.example.springuser.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,35 +67,50 @@ public class UserService {
     @Transactional
     public void followUser(Long followerId, Long followedId) {
         validateFollowRequest(followerId, followedId);
-        User follower = userRepository.findById(followerId).orElseThrow();
-        User followed = userRepository.findById(followedId).orElseThrow();
-        followed.getFollowers().add(follower);
-        userRepository.save(followed);
+        User follower = userRepository.findById(followerId).orElseThrow(() -> new EntityNotFoundException("Follower not found"));
+        User followed = userRepository.findById(followedId).orElseThrow(() -> new EntityNotFoundException("Followed user not found"));
+
+        if (!follower.getFollowing().contains(followed)) {
+            follower.getFollowing().add(followed);
+            followed.getFollowers().add(follower);
+            userRepository.save(follower);
+            userRepository.save(followed);
+        }
     }
 
     @Transactional
     public void unfollowUser(Long followerId, Long followedId) {
         validateFollowRequest(followerId, followedId);
-        User follower = userRepository.findById(followerId).orElseThrow();
-        User followed = userRepository.findById(followedId).orElseThrow();
-        followed.getFollowers().remove(follower);
-        userRepository.save(followed);
+        User follower = userRepository.findById(followerId).orElseThrow(() -> new EntityNotFoundException("Follower not found"));
+        User followed = userRepository.findById(followedId).orElseThrow(() -> new EntityNotFoundException("Followed user not found"));
+
+        if (follower.getFollowing().contains(followed)) {
+            follower.getFollowing().remove(followed);
+            followed.getFollowers().remove(follower);
+            userRepository.save(follower);
+            userRepository.save(followed);
+        }
     }
 
     @Transactional(readOnly = true)
     public List<UserInfoDto> getFollowers(Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
         return user.getFollowers().stream()
-                .map(follower -> new UserInfoDto(follower.getUsername(), follower.getRole() == UserRole.ADMIN))
+                .map(follower -> new UserInfoDto(
+                        follower.getId(),
+                        follower.getUsername(),
+                        follower.getRole() == UserRole.ADMIN))
                 .toList();
     }
+
     @Transactional(readOnly = true)
     public List<UserInfoDto> getFollowing(Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
         return user.getFollowing().stream()
-                .map(following -> new UserInfoDto(following.getUsername(), following.getRole() == UserRole.ADMIN))
+                .map(following -> new UserInfoDto(following.getId(), following.getUsername(), following.getRole() == UserRole.ADMIN))
                 .toList();
     }
+
     private static void validateFollowRequest(Long followerId, Long followedId) {
         // 검증 로직
         if (followerId.equals(followedId)) {

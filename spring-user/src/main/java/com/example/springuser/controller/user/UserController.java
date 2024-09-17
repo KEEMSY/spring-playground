@@ -68,11 +68,12 @@ public class UserController {
     @GetMapping("/user-info")
     @ResponseBody
     public UserInfoDto getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Long userId = userDetails.getUser().getId();
         String username = userDetails.getUser().getUsername();
         UserRole role = userDetails.getUser().getRole();
         boolean isAdmin = (role == UserRole.ADMIN);
 
-        return new UserInfoDto(username, isAdmin);
+        return new UserInfoDto(userId, username, isAdmin);
     }
 
     @GetMapping("/{provider}/callback")

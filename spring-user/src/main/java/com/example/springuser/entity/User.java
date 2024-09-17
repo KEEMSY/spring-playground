@@ -30,7 +30,7 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String email;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "user_followers",
             joinColumns = @JoinColumn(name = "followed_id"),
@@ -38,7 +38,7 @@ public class User {
     )
     private Set<User> followers = new HashSet<>();
 
-    @ManyToMany(mappedBy = "followers")
+    @ManyToMany(mappedBy = "followers", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<User> following = new HashSet<>();
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
