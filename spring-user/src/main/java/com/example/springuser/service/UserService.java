@@ -65,6 +65,7 @@ public class UserService {
 
     @Transactional
     public void followUser(Long followerId, Long followedId) {
+        validateFollowRequest(followerId, followedId);
         User follower = userRepository.findById(followerId).orElseThrow();
         User followed = userRepository.findById(followedId).orElseThrow();
         followed.getFollowers().add(follower);
@@ -73,11 +74,13 @@ public class UserService {
 
     @Transactional
     public void unfollowUser(Long followerId, Long followedId) {
+        validateFollowRequest(followerId, followedId);
         User follower = userRepository.findById(followerId).orElseThrow();
         User followed = userRepository.findById(followedId).orElseThrow();
         followed.getFollowers().remove(follower);
         userRepository.save(followed);
     }
+
     @Transactional(readOnly = true)
     public List<UserInfoDto> getFollowers(Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
@@ -91,5 +94,11 @@ public class UserService {
         return user.getFollowing().stream()
                 .map(following -> new UserInfoDto(following.getUsername(), following.getRole() == UserRole.ADMIN))
                 .toList();
+    }
+    private static void validateFollowRequest(Long followerId, Long followedId) {
+        // 검증 로직
+        if (followerId.equals(followedId)) {
+            throw new IllegalArgumentException("자기 자신을 팔로우(혹은 언팔로우) 할 수 없습니다.");
+        }
     }
 }

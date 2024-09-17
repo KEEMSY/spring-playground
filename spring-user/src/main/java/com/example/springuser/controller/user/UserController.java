@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -97,16 +98,28 @@ public class UserController {
       - 팔로잉은 자기 자신을 할 수 없다.
       - 팔로잉/언팔로우 는 요청자와 대상 유저의 정보가 일치해야만 가능하다.
      */
-    @PostMapping("/{followerId}/follow/{followedId}")
-    public ResponseEntity<BaseResponse<Void>> followUser(@PathVariable Long followerId, @PathVariable Long followedId) {
+    @PostMapping("/follow/{followedId}")
+    public ResponseEntity<BaseResponse<Void>> followUser(@PathVariable Long followedId) {
+        Long followerId =  ((UserDetailsImpl) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal())
+                .getUser()
+                .getId();
         userService.followUser(followerId, followedId);
         BaseResponse<Void> response = new BaseResponse<>();
         response.setMessage("Successfully followed user");
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{followerId}/unfollow/{followedId}")
-    public ResponseEntity<BaseResponse<Void>> unfollowUser(@PathVariable Long followerId, @PathVariable Long followedId) {
+    @PostMapping("/unfollow/{followedId}")
+    public ResponseEntity<BaseResponse<Void>> unfollowUser(@PathVariable Long followedId) {
+        Long followerId =  ((UserDetailsImpl) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal())
+                .getUser()
+                .getId();
         userService.unfollowUser(followerId, followedId);
         BaseResponse<Void> response = new BaseResponse<>();
         response.setMessage("Successfully unfollowed user");
