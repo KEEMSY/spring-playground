@@ -1,1 +1,6 @@
 rootProject.name = 'spring-skeleton'
+
+['core', 'web', 'data', 'security', 'documentation', 'test'].each { module ->
+    include "modules:$module"
+    project(":modules:$module").projectDir = file("modules/$module")
+}
